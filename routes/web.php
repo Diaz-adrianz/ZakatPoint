@@ -7,6 +7,18 @@ Route::get('/', function () {
     return Inertia::render('home');
 })->name('home');
 
+Route::get('jelajahi-materi-belajar', function () {
+    return Inertia::render('explore-learning-materials');
+})->name('explore-learning-materials');
+
+Route::get('jelajahi-donasi', function () {
+    return Inertia::render('explore-donations');
+})->name('explore-donations');
+
+Route::get('bayar-zakat', function () {
+    return Inertia::render('pay-zakat');
+})->name('pay-zakat');
+
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dasbor', function () {
         return Inertia::render('dashboard');
@@ -56,12 +68,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('materi-belajar/edit', function () {
         return Inertia::render('edit-learning-material');
     })->name('edit-learning-material');
-    Route::get('jelajahi-materi-belajar', function () {
-        return Inertia::render('explore-learning-materials');
-    })->name('explore-learning-materials');
-    Route::get('jelajahi-donasi', function () {
-        return Inertia::render('explore-donations');
-    })->name('explore-donations');
 
 });
 

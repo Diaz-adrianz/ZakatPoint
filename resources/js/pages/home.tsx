@@ -15,7 +15,7 @@ const Home = () => {
                 </p>
                 <div className="mt-6 flex flex-wrap gap-3">
                     <Button asChild>
-                        <Link href="bayar-zakat">Bayar zakat</Link>
+                        <Link href={route('pay-zakat')}>Bayar zakat</Link>
                     </Button>
                     <Button variant={'outline'} asChild>
                         <Link href={route('dashboard')}>Daftarkan desa</Link>
