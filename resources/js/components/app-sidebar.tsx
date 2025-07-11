@@ -13,6 +13,10 @@ const mainNavItems: NavItem[] = [
         href: '/dasbor',
         icon: LayoutGrid,
     },
+    {
+        title: 'daftar desa',
+        href: '/daftar-desa',
+    },
 ];
 
 const financeNavItems: NavItem[] = [
