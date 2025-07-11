@@ -21,9 +21,13 @@ export default function VisitorLayout({ children }: PropsWithChildren<AuthLayout
                         <Button variant={'ghost'} asChild>
                             <Link href="/donasi">Donasi</Link>
                         </Button>
-                        {auth.user && (
-                            <Button variant={'ghost'} asChild>
-                                <Link href={route('dashboard')}>Dasbor desa</Link>
+                        {auth.user ? (
+                            <Button variant={'outline'} asChild>
+                                <Link href={route('dashboard')}>Dasbor</Link>
+                            </Button>
+                        ) : (
+                            <Button asChild>
+                                <Link href={route('login')}>Login</Link>
                             </Button>
                         )}
                     </div>

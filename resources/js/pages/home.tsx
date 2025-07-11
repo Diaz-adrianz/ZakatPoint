@@ -18,7 +18,7 @@ const Home = () => {
                         <Link href="bayar-zakat">Bayar zakat</Link>
                     </Button>
                     <Button variant={'outline'} asChild>
-                        <Link href={route('village-dashboard')}>Daftarkan desa</Link>
+                        <Link href={route('dashboard')}>Daftarkan desa</Link>
                     </Button>
                 </div>
             </Container>
