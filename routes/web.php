@@ -19,6 +19,10 @@ Route::get('bayar-zakat', function () {
     return Inertia::render('pay-zakat');
 })->name('pay-zakat');
 
+Route::get('bayar-zakat-fitrah/{code}', function () {
+    return Inertia::render('pay-zakat-fitrah');
+})->name('pay-zakat-fitrah');
+
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dasbor', function () {
         return Inertia::render('dashboard');
