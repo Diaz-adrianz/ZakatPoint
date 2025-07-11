@@ -8,10 +8,11 @@
 @custom-variant dark (&:is(.dark *));
 
 @font-face {
-    font-family: Forum;
-    src: url('public/fonts/Forum-Regular.ttf') format('ttf');
-  }
-  
+    font-family: 'Forum';
+    src: url('/fonts/Forum-Regular.ttf') format('truetype'); /* Corrected font path */
+    font-weight: normal;
+    font-style: normal;
+}
 
 @theme {
     --font-forum: 'Forum', sans-serif;
@@ -157,10 +158,56 @@
 
 @layer base {
     * {
-        @apply border-border font-forum;
+        @apply border-border;
     }
 
     body {
         @apply bg-background text-foreground;
+    }
+}
+
+@layer utilities {
+    .typo-h1 {
+        @apply scroll-m-20 text-4xl leading-tight font-extrabold tracking-tight text-balance lg:text-5xl;
+    }
+
+    .typo-h2 {
+        @apply scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0;
+    }
+
+    .typo-h3 {
+        @apply scroll-m-20 text-2xl font-semibold tracking-tight;
+    }
+
+    .typo-h4 {
+        @apply scroll-m-20 text-xl font-semibold tracking-tight;
+    }
+
+    .typo-p {
+        @apply leading-7;
+    }
+
+    .typo-quote {
+        @apply mt-6 border-l-2 pl-6 italic;
+    }
+
+    .typo-inline {
+        @apply relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold;
+    }
+
+    .typo-lead {
+        @apply text-xl text-muted-foreground;
+    }
+
+    .typo-large {
+        @apply text-lg font-semibold;
+    }
+
+    .typo-small {
+        @apply text-sm leading-none font-medium;
+    }
+
+    .typo-muted {
+        @apply text-sm text-muted-foreground;
     }
 }

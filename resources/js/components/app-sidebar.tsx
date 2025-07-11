@@ -1,16 +1,16 @@
-import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
-import { BookOpen, Folder, LayoutGrid } from 'lucide-react';
+import { BookOpenIcon, BriefcaseBusinessIcon, CoinsIcon, HandCoinsIcon, HeartHandshakeIcon, LayoutGrid, StoreIcon, UsersIcon } from 'lucide-react';
 import AppLogo from './app-logo';
+import SelectVillage from './select-village';
 
 const mainNavItems: NavItem[] = [
     {
-        title: 'Dashboard',
-        href: '/dashboard',
+        title: 'Dasbor',
+        href: '/dasbor',
         icon: LayoutGrid,
     },
     {
@@ -19,16 +19,44 @@ const mainNavItems: NavItem[] = [
     },
 ];
 
-const footerNavItems: NavItem[] = [
+const financeNavItems: NavItem[] = [
     {
-        title: 'Repository',
-        href: 'https://github.com/laravel/react-starter-kit',
-        icon: Folder,
+        title: 'Zakat mal',
+        href: '/zakat-mal',
+        icon: CoinsIcon,
     },
     {
-        title: 'Documentation',
-        href: 'https://laravel.com/docs/starter-kits#react',
-        icon: BookOpen,
+        title: 'Zakat penghasilan',
+        href: '/zakat-penghasilan',
+        icon: BriefcaseBusinessIcon,
+    },
+    {
+        title: 'Zakat fitrah',
+        href: '/zakat-fitrah',
+        icon: HandCoinsIcon,
+    },
+    {
+        title: 'Donasi',
+        href: '/donasi',
+        icon: HeartHandshakeIcon,
+    },
+];
+
+const adminNavItems: NavItem[] = [
+    {
+        title: 'Materi belajar',
+        href: '/materi-belajar',
+        icon: BookOpenIcon,
+    },
+    {
+        title: 'Penduduk',
+        href: '/penduduk',
+        icon: UsersIcon,
+    },
+    {
+        title: 'Profil desa',
+        href: '/profil-desa',
+        icon: StoreIcon,
     },
 ];
 
@@ -47,12 +75,14 @@ export function AppSidebar() {
                 </SidebarMenu>
             </SidebarHeader>
 
-            <SidebarContent>
+            <SidebarContent className="gap-6">
+                <SelectVillage />
                 <NavMain items={mainNavItems} />
+                <NavMain label="Keuangan" items={financeNavItems} />
+                <NavMain label="Admin" items={adminNavItems} />
             </SidebarContent>
 
             <SidebarFooter>
-                <NavFooter items={footerNavItems} className="mt-auto" />
                 <NavUser />
             </SidebarFooter>
         </Sidebar>
