@@ -38,15 +38,15 @@ const SelectVillage = () => {
             {expand && (
                 <>
                     <Button variant={'secondary'} size={'sm'} asChild>
-                        <Link href="">
+                        <Link href="/cari-desa" prefetch>
                             <SearchIcon />
                             Cari desa
                         </Link>
                     </Button>
                     <Button variant={'secondary'} size={'sm'} asChild>
-                        <Link href="">
+                        <Link href="/tambah-desa" prefetch>
                             <PlusIcon />
-                            Desa baru
+                            Daftarkan desa
                         </Link>
                     </Button>
                 </>
