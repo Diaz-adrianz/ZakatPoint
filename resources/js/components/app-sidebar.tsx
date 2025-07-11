@@ -13,6 +13,10 @@ const mainNavItems: NavItem[] = [
         href: '/dashboard',
         icon: LayoutGrid,
     },
+    {
+        title: 'kucing',
+        href: '/dashboard',
+    },
 ];
 
 const footerNavItems: NavItem[] = [

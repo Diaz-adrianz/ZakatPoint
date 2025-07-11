@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->foreignId('village_id')->constrained()->cascadeOnDelete();
             $table->enum('role', ['admin', 'editor', 'member'])->default('member');
+            $table->boolean('is_pending')->default(false);
             $table->timestamps();
         });
     }
