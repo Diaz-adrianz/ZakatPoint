@@ -1,17 +1,29 @@
 import { cn } from '@/lib/utils';
-import { Link } from '@inertiajs/react';
+import { SharedData } from '@/types';
+import { Link, usePage } from '@inertiajs/react';
 import { ChevronDownIcon, PlusIcon, SearchIcon } from 'lucide-react';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Button } from './ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 
 const SelectVillage = () => {
+    const villageId = usePage<SharedData>().props.villageId;
+
     const [expand, setExpand] = useState(false);
+
+    const setCookie = useCallback((id: string) => {
+        const expires = new Date();
+        expires.setFullYear(expires.getFullYear() + 20);
+
+        document.cookie = `village_id=${id}; path=/; expires=${expires.toUTCString()};`;
+
+        window.location.reload();
+    }, []);
 
     return (
         <div className="relative flex flex-col items-stretch gap-3 rounded-md border p-3 pb-8">
             <div>
-                <Select>
+                <Select defaultValue={villageId} onValueChange={setCookie}>
                     <SelectTrigger className="">
                         <SelectValue placeholder="Pilih desa" />
                     </SelectTrigger>

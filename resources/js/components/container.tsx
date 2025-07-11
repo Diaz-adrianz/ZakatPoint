@@ -7,7 +7,7 @@ type ContainerProps = {
 
 const Container = forwardRef<HTMLDivElement, ContainerProps>(({ children, className, ...props }, ref) => {
     return (
-        <div ref={ref} className={cn('mx-auto w-full overflow-x-hidden max-w-7xl p-6', className)} {...props}>
+        <div ref={ref} className={cn('mx-auto w-full max-w-7xl overflow-x-hidden p-6', className)} {...props}>
             {children}
         </div>
     );

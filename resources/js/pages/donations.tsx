@@ -16,15 +16,14 @@ export default function Donations() {
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Donasi" />
             <div className="flex flex-col gap-3 overflow-x-hidden p-3">
-            <div>
-                <Button asChild>
-                    <Link href={route("add-donation")}>
-                    <PlusIcon />
-                    Donasi baru
-                    </Link>
-                </Button>
+                <div>
+                    <Button asChild>
+                        <Link href={route('add-donation')}>
+                            <PlusIcon />
+                            Donasi baru
+                        </Link>
+                    </Button>
                 </div>
-
             </div>
         </AppLayout>
     );

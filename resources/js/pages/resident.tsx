@@ -13,8 +13,7 @@ export default function Resident() {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Penduduk" />
-            <div className="flex flex-col gap-3 overflow-x-hidden p-3">
-            </div>
+            <div className="flex flex-col gap-3 overflow-x-hidden p-3"></div>
         </AppLayout>
     );
 }

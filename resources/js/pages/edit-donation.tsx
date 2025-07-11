@@ -17,8 +17,7 @@ export default function EditDonation() {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Edit donasi" />
-            <div className="flex flex-col gap-3 overflow-x-hidden p-3">
-            </div>
+            <div className="flex flex-col gap-3 overflow-x-hidden p-3"></div>
         </AppLayout>
     );
 }

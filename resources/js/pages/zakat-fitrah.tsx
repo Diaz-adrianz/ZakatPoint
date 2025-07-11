@@ -17,12 +17,12 @@ export default function ZakatFitrah() {
             <Head title="Zakat fitrah" />
             <div className="flex flex-col gap-3 overflow-x-hidden p-3">
                 <div>
-                <Button asChild>
-                    <Link href={route("add-zakat-fitrah-periode")}>
-                    <PlusIcon />
-                    Periode baru
-                    </Link>
-                </Button>
+                    <Button asChild>
+                        <Link href={route('add-zakat-fitrah-periode')}>
+                            <PlusIcon />
+                            Periode baru
+                        </Link>
+                    </Button>
                 </div>
             </div>
         </AppLayout>

@@ -17,8 +17,7 @@ export default function ZakatFitrahAddPeriode() {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Tambah periode" />
-            <div className="flex flex-col gap-3 overflow-x-hidden p-3">
-            </div>
+            <div className="flex flex-col gap-3 overflow-x-hidden p-3"></div>
         </AppLayout>
     );
 }

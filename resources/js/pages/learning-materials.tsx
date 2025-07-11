@@ -16,15 +16,14 @@ export default function LearningMaterials() {
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Materi belajar" />
             <div className="flex flex-col gap-3 overflow-x-hidden p-3">
-            <div>
-                <Button asChild>
-                    <Link href={route("add-learning-material")}>
-                    <PlusIcon />
-                    Materi baru
-                    </Link>
-                </Button>
+                <div>
+                    <Button asChild>
+                        <Link href={route('add-learning-material')}>
+                            <PlusIcon />
+                            Materi baru
+                        </Link>
+                    </Button>
                 </div>
-
             </div>
         </AppLayout>
     );
