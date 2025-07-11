@@ -14,8 +14,8 @@ const mainNavItems: NavItem[] = [
         icon: LayoutGrid,
     },
     {
-        title: 'kucing',
-        href: '/dashboard',
+        title: 'daftar desa',
+        href: '/daftar-desa',
     },
 ];
 

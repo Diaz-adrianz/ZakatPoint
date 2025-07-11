@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Village extends Model
 {
-    protected $fillable = ['province', 'city', 'district', 'village', 'postalCode', 'longitude', 'latitude', 'emailVillage'];
+    protected $fillable = ['province', 'city', 'district', 'village', 'postal_code', 'longitude', 'latitude', 'email_village'];
 
     public function users()
     {

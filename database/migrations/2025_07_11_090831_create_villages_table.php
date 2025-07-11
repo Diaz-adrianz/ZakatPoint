@@ -16,12 +16,13 @@ return new class extends Migration
             $table->string('province');
             $table->string('city');
             $table->string('district');
-            $table->string('village')->unique();
-            $table->string('postal_code')->unique();
+            $table->string('village');
+            $table->string('postal_code');
             $table->string('longitude');
             $table->string('latitude');
             $table->string('email_village')->unique();
             $table->timestamps();
+            $table->unique(['village', 'postal_code']);
         });
     }
 
