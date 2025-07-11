@@ -8,9 +8,9 @@ Route::get('/', function () {
 })->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('dashboard', function () {
+    Route::get('dasbor-desa', function () {
         return Inertia::render('dashboard');
-    })->name('dashboard');
+    })->name('village-dashboard');
 });
 
 require __DIR__.'/settings.php';
