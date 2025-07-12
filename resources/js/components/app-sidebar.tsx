@@ -13,10 +13,6 @@ const mainNavItems: NavItem[] = [
         href: '/dasbor',
         icon: LayoutGrid,
     },
-    {
-        title: 'daftar desa',
-        href: '/daftar-desa',
-    },
 ];
 
 const financeNavItems: NavItem[] = [
@@ -62,7 +58,7 @@ const adminNavItems: NavItem[] = [
 
 export function AppSidebar() {
     return (
-        <Sidebar collapsible="icon" variant="inset">
+        <Sidebar collapsible="offcanvas" variant="inset">
             <SidebarHeader>
                 <SidebarMenu>
                     <SidebarMenuItem>

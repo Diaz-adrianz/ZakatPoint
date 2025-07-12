@@ -21,7 +21,7 @@ const SelectVillage = () => {
     }, []);
 
     return (
-        <div className="relative flex flex-col items-stretch gap-3 rounded-md border p-3 pb-8">
+        <div className="relative flex flex-col bg-background text-foreground items-stretch gap-3 rounded-md border p-3 pb-8">
             <div>
                 <Select defaultValue={villageId} onValueChange={setCookie}>
                     <SelectTrigger className="">
