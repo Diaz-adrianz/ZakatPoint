@@ -66,4 +66,13 @@ class VillageController extends Controller
         return redirect()->route('dashboard')->with('success', 'Desa berhasil ditambahkan.');
     }
 
+    public function userVillages(Request $request)
+    {
+        $userId = Auth::id();
+        $userVillages = UserVillage::where('user_id', $userId)
+                                   ->with('village')
+                                   ->get();
+
+        return response()->json($userVillages, 200);
+    }
 }

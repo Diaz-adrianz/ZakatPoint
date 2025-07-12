@@ -2,9 +2,10 @@ import { cn } from '@/lib/utils';
 import { SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
 import { ChevronDownIcon, PlusIcon, SearchIcon } from 'lucide-react';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Button } from './ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
+import { UserVillage } from '@/types/model';
 
 const SelectVillage = () => {
     const villageId = usePage<SharedData>().props.villageId;
@@ -20,6 +21,17 @@ const SelectVillage = () => {
         window.location.reload();
     }, []);
 
+    const [villages, setVillages] = useState<UserVillage[]>([])
+    const getVillages = () => {
+        fetch("/api/user-villages")
+            .then(res => res.json())
+            .then(data => setVillages(data))
+    }
+
+    useEffect(() => {
+        getVillages()
+    }, [])
+
     return (
         <div className="relative flex flex-col bg-background text-foreground items-stretch gap-3 rounded-md border p-3 pb-8">
             <div>
@@ -28,21 +40,15 @@ const SelectVillage = () => {
                         <SelectValue placeholder="Pilih desa" />
                     </SelectTrigger>
                     <SelectContent>
-                        <SelectItem value="Cipadung">
-                            <p className="typo-p">
-                                Cipadung <span className="typo-small text-muted-foreground">⎯ Admin</span>
-                            </p>
-                        </SelectItem>
-                        <SelectItem value="Binong">
-                            <p className="typo-p">
-                                Binong <span className="typo-small text-muted-foreground">⎯ Warga</span>
-                            </p>
-                        </SelectItem>
-                        <SelectItem value="Manisi">
-                            <p className="typo-p">
-                                Manisi <span className="typo-small text-muted-foreground">⎯ Editor</span>
-                            </p>
-                        </SelectItem>
+                        {
+                            villages.map((v, i) => (
+                                <SelectItem key={i} value={v.village_id.toString()}>
+                                    <p className="typo-p">
+                                        {v.village?.village} <span className="typo-small text-muted-foreground">⎯ {v.role}</span>
+                                    </p>
+                                </SelectItem>
+                            ))
+                        }
                     </SelectContent>
                 </Select>
             </div>
