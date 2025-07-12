@@ -50,11 +50,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('materi-belajar', function () {
         return Inertia::render('learning-materials');
     })->name('learning-materials');
-    Route::get('penduduk', function () {
-        return Inertia::render('resident');
-    })->name('resident');
 
+    
     // VILLAGE / DESA 
+    Route::get('penduduk', [VillageController::class, 'getVillageUsers'])->name('resident');
     Route::get('profil-desa', function () {
         return Inertia::render('village-profile');
     })->name('village-profile');

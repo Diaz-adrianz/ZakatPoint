@@ -75,4 +75,44 @@ class VillageController extends Controller
 
         return response()->json($userVillages, 200);
     }
+
+    public function getVillageUsers(Request $request)
+    {
+        $villageId = $request->cookie('village_id');
+
+        if (!$villageId) {
+            return Inertia::render('resident', [
+                'villagers' => [],
+            ]);        
+        }
+
+        $search = $request->query('search');
+        $isPending = $request->boolean('is_pending', null);
+        $limit = $request->query('limit', 20);
+        $limit = min(max(1, (int)$limit), 100);
+
+        $query = UserVillage::where('village_id', $villageId)
+                            ->with('user:id,name');
+
+        if ($search) {
+            $query->whereHas('user', function ($q) use ($search) {
+                $q->where('name', 'like', '%' . $search . '%')
+                  ->orWhere('email', 'like', '%' . $search . '%');
+            });
+        }
+
+        if (!is_null($isPending)) {
+            $query->where('is_pending', $isPending);
+        }
+
+        $userVillages = $query->paginate($limit);
+
+        return Inertia::render('resident', [
+            'query' => [
+                'search' => $search,
+                'is_pending' => $isPending,
+            ],
+            'villagers' => $userVillages,
+        ]);
+    }
 }
