@@ -116,4 +116,16 @@ class ArticleController extends Controller
             return Redirect::back()->with('error', 'Terjadi kesalahan saat memperbarui artikel. Silakan coba lagi.');
         }
     }
+
+    public function destroy($id)
+    {
+        $article = Article::findOrFail($id);
+
+        try {
+            $article->delete();
+            return redirect()->route('article.list')->with('success', 'Artikel "' . $article->title . '" berhasil dihapus.');
+        } catch (\Exception $e) {
+            return Redirect::back()->with('error', 'Terjadi kesalahan saat menghapus artikel. Silakan coba lagi.');
+        }
+    }
 }

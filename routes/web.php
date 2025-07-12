@@ -82,6 +82,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // ARTICLE / ARTIKEL BELAJAR 
     Route::get('daftar-artikel', [ArticleController::class, 'list'])
          ->name('article.list');
+    Route::delete('daftar-artikel/{id}', [ArticleController::class, 'destroy'])
+         ->middleware('check_village_role:admin|editor')
+         ->name('article.destroy');
     Route::get('daftar-artikel/tambah', [ArticleController::class, 'add'])
          ->middleware('check_village_role:admin|editor')
          ->name('article.add');

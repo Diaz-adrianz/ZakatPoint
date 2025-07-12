@@ -30,6 +30,15 @@ export default function ArticleList({ query, articles }: { query?: { search?: st
         })
     }
 
+    const destroy = useForm()
+    const _destroy = (id: number) => {
+        destroy.delete(route('article.destroy', { id }), {
+            preserveState: true,
+            preserveScroll: true,
+            replace: true,
+        })
+    }
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Artikel" />
@@ -86,7 +95,7 @@ export default function ArticleList({ query, articles }: { query?: { search?: st
                                                 <Edit2Icon />
                                             </Link>
                                         </Button>
-                                        <Button variant={'destructive'} size={'icon'}>
+                                        <Button variant={'destructive'} size={'icon'} onClick={() => _destroy(dat.id)}>
                                             <Trash2Icon />
                                         </Button>
                                     </div>
