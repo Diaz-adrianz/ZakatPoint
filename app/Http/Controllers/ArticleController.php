@@ -33,6 +33,36 @@ class ArticleController extends Controller
         ]);
     }
 
+    public function explore(Request $request)
+    {
+        $search = $request->query('search');
+        $limit = $request->query('limit', 20);
+        $limit = min(max(1, (int)$limit), 100);
+
+        $query = Article::query()
+                        ->with('village:id,village');
+
+        if ($search) {
+            $query->where('title', 'like', '%' . $search . '%')
+                  ->orWhere('slug', 'like', '%' . $search . '%');
+        }
+
+        $articles = $query->orderBy('created_at', 'desc')->paginate($limit);
+
+        $articles->through(function ($article) {
+            $plainContent = strip_tags($article->content);
+            $article->content = Str::limit($plainContent, 100);
+            return $article;
+        });
+
+        return Inertia::render('article-explore', [
+            'articles' => $articles,
+            'query' => [
+                'search' => $search,
+            ]
+        ]);
+    }
+
     public function add()
     {
         return Inertia::render('article-add');

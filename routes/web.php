@@ -10,9 +10,8 @@ Route::get('/', function () {
     return Inertia::render('home');
 })->name('home');
 
-Route::get('jelajahi-materi-belajar', function () {
-    return Inertia::render('explore-learning-materials');
-})->name('explore-learning-materials');
+Route::get('artikel', [ArticleController::class, 'explore'])
+     ->name('article.explore');
 
 Route::get('jelajahi-donasi', function () {
     return Inertia::render('explore-donations');
