@@ -1,3 +1,4 @@
+import 'react-quill-new/dist/quill.snow.css';
 import '../css/app.css';
 
 import { createInertiaApp } from '@inertiajs/react';

@@ -40,8 +40,8 @@ const financeNavItems: NavItem[] = [
 
 const adminNavItems: NavItem[] = [
     {
-        title: 'Materi belajar',
-        href: '/materi-belajar',
+        title: 'Artikel',
+        href: '/daftar-artikel',
         icon: BookOpenIcon,
     },
     {
