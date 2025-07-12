@@ -57,9 +57,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('profil-desa', function () {
         return Inertia::render('village-profile');
     })->name('village-profile');
-    Route::get('cari-desa', function () {
-        return Inertia::render('explore-villages');
-    })->name('explore-villages');
+    Route::get('cari-desa', [VillageController::class, 'exploreVillages'])->name('explore-villages');
+    Route::post('gabung-desa', [VillageController::class, 'joinVillage'])->name('join-village');
     Route::get('tambah-desa', [VillageController::class, 'create'])->name('new-village');
     Route::post('tambah-desa', [VillageController::class, 'store'])->name('village.store');
 

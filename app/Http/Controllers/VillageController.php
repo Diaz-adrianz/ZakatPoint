@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redirect;
 
 class VillageController extends Controller
 {
@@ -70,8 +71,9 @@ class VillageController extends Controller
     {
         $userId = Auth::id();
         $userVillages = UserVillage::where('user_id', $userId)
-                                   ->with('village')
-                                   ->get();
+                                    ->where('is_pending', false)
+                                    ->with('village')
+                                    ->get();
 
         return response()->json($userVillages, 200);
     }
@@ -108,11 +110,71 @@ class VillageController extends Controller
         $userVillages = $query->paginate($limit);
 
         return Inertia::render('resident', [
-            'query' => [
-                'search' => $search,
-                'is_pending' => $isPending,
-            ],
             'villagers' => $userVillages,
         ]);
+    }
+
+    public function exploreVillages(Request $request)
+    {
+        $search = $request->query('search');
+        $limit = $request->query('limit', 20);
+        $limit = min(max(1, (int)$limit), 100);
+
+        $query = Village::query()
+                        ->whereDoesntHave('users', function ($q) {
+                            $q->where('user_id', Auth::id())
+                              ->where('is_pending', false); 
+                        });
+
+        if ($search) {
+            $query->where('district', 'like', '%' . $search . '%')
+                  ->orWhere('village', 'like', '%' . $search . '%');
+        }
+
+        $villages = $query->orderBy('created_at', 'desc')->paginate($limit);
+
+        return Inertia::render('explore-villages', [
+            'villages' => $villages,
+            'query' => [
+                'search' => $search,
+            ]
+        ]);
+    }
+
+    public function joinVillage(Request $request)
+    {
+        $userId = Auth::id();
+        $villageId = $request->input('village_id'); 
+
+        $existingUserVillage = UserVillage::where('user_id', $userId)
+                                          ->where('village_id', $villageId)
+                                          ->first();
+
+        if ($existingUserVillage) {
+            return Redirect::back()->with('error', 'Anda sudah mengajukan permintaan gabung atau sudah menjadi anggota desa ini.');
+        }
+
+        try {
+            $request->validate([
+                'village_id' => [
+                    'required',
+                    'integer',
+                    'exists:villages,id',
+                ],
+            ]);
+
+            UserVillage::create([
+                'user_id' => $userId,
+                'village_id' => $villageId,
+                'role' => 'member', 
+                'is_pending' => true,
+            ]);
+
+            return Redirect::back()->with('success', 'Permintaan bergabung ke desa berhasil dikirim. Menunggu persetujuan admin.');
+
+        } catch (\Exception $e) {
+            return Redirect::back()->with('error', 'Terjadi kesalahan saat bergabung ke desa. Silakan coba lagi.');
+        }
+
     }
 }

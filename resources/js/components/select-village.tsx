@@ -25,7 +25,10 @@ const SelectVillage = () => {
     const getVillages = () => {
         fetch('/api/user-villages')
             .then((res) => res.json())
-            .then((data) => setVillages(data));
+            .then((data) => {
+                setVillages(data);
+                if (!data.length) setExpand(true);
+            });
     };
 
     useEffect(() => {
@@ -34,22 +37,26 @@ const SelectVillage = () => {
 
     return (
         <div className="relative flex flex-col items-stretch gap-3 rounded-md border bg-background p-3 pb-8 text-foreground">
-            <div>
-                <Select defaultValue={villageId} onValueChange={setCookie}>
-                    <SelectTrigger className="">
-                        <SelectValue placeholder="Pilih desa" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        {villages.map((v, i) => (
-                            <SelectItem key={i} value={v.village_id.toString()}>
-                                <p className="typo-p">
-                                    {v.village?.village} <span className="typo-small text-muted-foreground">⎯ {v.role}</span>
-                                </p>
-                            </SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
-            </div>
+            {
+                villages.length ? 
+                    <div>
+                        <Select defaultValue={villageId} onValueChange={setCookie}>
+                            <SelectTrigger className="">
+                                <SelectValue placeholder="Pilih desa" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {villages.map((v, i) => (
+                                    <SelectItem key={i} value={v.village_id.toString()}>
+                                        <p className="typo-p">
+                                            {v.village?.village} <span className="typo-small text-muted-foreground">⎯ {v.role}</span>
+                                        </p>
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+                    : null
+            }
 
             {expand && (
                 <>
