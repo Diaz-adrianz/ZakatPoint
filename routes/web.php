@@ -55,10 +55,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // VILLAGE / DESA 
     Route::get('penduduk', [VillageController::class, 'getVillageUsers'])->name('resident');
     Route::patch('terima-penduduk', [VillageController::class, 'acceptUserVillage'])
-         ->middleware('is_village_admin')
+         ->middleware('check_village_role:admin')
          ->name('accept-uservillage');
     Route::patch('ubah-peran-penduduk', [VillageController::class, 'changeUserVillageRole'])
-         ->middleware('is_village_admin')
+         ->middleware('check_village_role:admin')
          ->name('change-uservillage-role');
 
     Route::get('profil-desa', function () {
