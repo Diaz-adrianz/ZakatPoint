@@ -1,3 +1,4 @@
+import Flash from '@/components/flash';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -5,9 +6,9 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import AppLayout from '@/layouts/app-layout';
-import { type BreadcrumbItem } from '@/types';
+import { SharedData, type BreadcrumbItem } from '@/types';
 import { PaginatedResponse, UserVillage } from '@/types/model';
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import { CheckIcon, ChevronLeftIcon, ChevronRightIcon, UserRoundXIcon } from 'lucide-react';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -22,26 +23,57 @@ type Query = {
     is_pending?: boolean;
 };
 
-export default function Resident({ villagers }: { villagers: PaginatedResponse<UserVillage> }) {
-    const { data, setData, get } = useForm<Query>();
+export default function Resident({ query, villagers }: { query?: { search?: string }; villagers: PaginatedResponse<UserVillage> }) {
+    const { flash } = usePage<SharedData>().props;
+
+    const list = useForm<Query>({
+        search: query?.search,
+    });
+
+    const acceptUser = useForm<{ user_village_id?: number }>({});
+    const _acceptUser = (id: number) => {
+        acceptUser.data.user_village_id = id;
+        acceptUser.patch(route('accept-uservillage'), {
+            preserveState: true,
+            preserveScroll: true,
+            replace: true,
+        });
+    };
+
+    const changeUserRole = useForm<{ user_village_id?: number; role?: string }>({});
+    const _changeUserRole = (id: number, role: string) => {
+        changeUserRole.data.user_village_id = id;
+        changeUserRole.data.role = role;
+        changeUserRole.patch(route('change-uservillage-role'), {
+            preserveState: true,
+            preserveScroll: true,
+            replace: true,
+        });
+    };
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Penduduk" />
 
+            <Flash flash={flash} />
+
             <form
                 onSubmit={(e) => {
                     e.preventDefault();
-                    get(route('resident'));
+                    list.get(route('resident'), {
+                        preserveState: true,
+                        preserveScroll: true,
+                        replace: true,
+                    });
                 }}
-                className="mb-3 flex flex-wrap gap-3"
+                className="flex flex-wrap gap-3"
             >
                 <div>
-                    <Input name="search" placeholder="Cari..." value={data.search} onChange={(e) => setData('search', e.target.value)} />
+                    <Input name="search" placeholder="Cari..." value={list.data.search} onChange={(e) => list.setData('search', e.target.value)} />
                 </div>
             </form>
 
-            <Card className="mb-3 overflow-x-auto py-0">
+            <Card className="overflow-x-auto py-0">
                 <Table>
                     <TableHeader>
                         <TableRow>
@@ -61,7 +93,7 @@ export default function Resident({ villagers }: { villagers: PaginatedResponse<U
                                     {v.is_pending ? <Badge variant={'destructive'}>Tertunda</Badge> : <Badge>Sah</Badge>}
                                 </TableCell>
                                 <TableCell>
-                                    <Select value={v.role}>
+                                    <Select value={v.role} onValueChange={(r) => _changeUserRole(v.id, r)}>
                                         <SelectTrigger>
                                             <SelectValue placeholder="Peran" />
                                         </SelectTrigger>
@@ -73,16 +105,18 @@ export default function Resident({ villagers }: { villagers: PaginatedResponse<U
                                     </Select>
                                 </TableCell>
                                 <TableCell>
-                                    {v.is_pending ? (
-                                        <Button variant={'outline'} size={'icon'}>
-                                            <CheckIcon />
+                                    <div className="flex items-center gap-3">
+                                        {v.is_pending ? (
+                                            <Button variant={'outline'} size={'icon'} onClick={() => _acceptUser(v.id)}>
+                                                <CheckIcon />
+                                            </Button>
+                                        ) : (
+                                            ''
+                                        )}
+                                        <Button variant={'destructive'} size={'icon'}>
+                                            <UserRoundXIcon />
                                         </Button>
-                                    ) : (
-                                        ''
-                                    )}
-                                    <Button variant={'destructive'} size={'icon'}>
-                                        <UserRoundXIcon />
-                                    </Button>
+                                    </div>
                                 </TableCell>
                             </TableRow>
                         ))}

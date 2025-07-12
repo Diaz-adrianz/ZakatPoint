@@ -1,8 +1,8 @@
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
-import { type NavItem } from '@/types';
-import { Link } from '@inertiajs/react';
+import { SharedData, type NavItem } from '@/types';
+import { Link, usePage } from '@inertiajs/react';
 import { BookOpenIcon, BriefcaseBusinessIcon, CoinsIcon, HandCoinsIcon, HeartHandshakeIcon, LayoutGrid, StoreIcon, UsersIcon } from 'lucide-react';
 import AppLogo from './app-logo';
 import SelectVillage from './select-village';
@@ -57,6 +57,8 @@ const adminNavItems: NavItem[] = [
 ];
 
 export function AppSidebar() {
+    const { villageId } = usePage<SharedData>().props;
+
     return (
         <Sidebar collapsible="offcanvas" variant="inset">
             <SidebarHeader>
@@ -74,8 +76,12 @@ export function AppSidebar() {
             <SidebarContent className="gap-6">
                 <SelectVillage />
                 <NavMain items={mainNavItems} />
-                <NavMain label="Keuangan" items={financeNavItems} />
-                <NavMain label="Admin" items={adminNavItems} />
+                {!!villageId && (
+                    <>
+                        <NavMain label="Keuangan" items={financeNavItems} />
+                        <NavMain label="Admin" items={adminNavItems} />
+                    </>
+                )}
             </SidebarContent>
 
             <SidebarFooter>
