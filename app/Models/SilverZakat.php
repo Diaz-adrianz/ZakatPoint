@@ -4,10 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class IncomeZakat extends Model
+class SilverZakat extends Model
 {
     protected $fillable = [
-        'income_month', 'income_plus', 'amount',
+        'price', 'amount',
         'email', 'name', 'no_hp', 'gender',
         'village_id', 'payment_id',
     ];

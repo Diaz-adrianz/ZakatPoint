@@ -6,7 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class FitrahZakat extends Model
 {
-    protected $fillable = ['dependents', 'amount', 'fitrah_session_id', 'payment_id'];
+    protected $fillable = [
+        'dependents', 'amount',
+        'email', 'name', 'no_hp', 'gender',
+        'fitrah_session_id', 'payment_id',
+    ];
 
     public function session()
     {

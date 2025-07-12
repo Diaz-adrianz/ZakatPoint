@@ -6,7 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class Donatur extends Model
 {
-    protected $fillable = ['username', 'nominal', 'donation_id', 'payment_id'];
+    protected $fillable = [
+        'username', 'email', 'name', 'no_hp', 'gender',
+        'nominal', 'donation_id', 'payment_id',
+    ];
 
     public function donation()
     {
