@@ -89,7 +89,6 @@ class VillageController extends Controller
         }
 
         $search = $request->query('search');
-        $isPending = $request->boolean('is_pending', null);
         $limit = $request->query('limit', 20);
         $limit = min(max(1, (int)$limit), 100);
 
@@ -103,14 +102,13 @@ class VillageController extends Controller
             });
         }
 
-        if (!is_null($isPending)) {
-            $query->where('is_pending', $isPending);
-        }
-
         $userVillages = $query->paginate($limit);
 
         return Inertia::render('resident', [
             'villagers' => $userVillages,
+            'query' => [
+                'search' => $search,
+            ]
         ]);
     }
 
@@ -175,6 +173,28 @@ class VillageController extends Controller
         } catch (\Exception $e) {
             return Redirect::back()->with('error', 'Terjadi kesalahan saat bergabung ke desa. Silakan coba lagi.');
         }
+    }
 
+    public function acceptUserVillage(Request $request) 
+    {
+        $request->validate([
+            'user_village_id' => 'required|integer|exists:user_villages,id',
+        ]);
+
+        $userVillageId = $request->input('user_village_id');
+        $userVillageToAccept = UserVillage::with('village')->find($userVillageId);
+
+        if (!$userVillageToAccept) {
+            return Redirect::back()->with('error', 'Pengguna tidak ditemukan.');
+        }
+
+        try {
+            $userVillageToAccept->is_pending = false;
+            $userVillageToAccept->save();
+
+            return Redirect::back()->with('success', 'Pengguna ' . $userVillageToAccept->user->name . ' berhasil disetujui untuk bergabung dengan desa ' . $userVillageToAccept->village->village . '.');
+        } catch (\Exception $e) {
+            return Redirect::back()->with('error', 'Terjadi kesalahan saat menyetujui pengguna. Silakan coba lagi.');
+        }
     }
 }

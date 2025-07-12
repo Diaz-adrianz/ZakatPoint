@@ -54,6 +54,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     
     // VILLAGE / DESA 
     Route::get('penduduk', [VillageController::class, 'getVillageUsers'])->name('resident');
+    Route::patch('terima-penduduk', [VillageController::class, 'acceptUserVillage'])
+         ->middleware('is_village_admin')
+         ->name('accept-user');
+
     Route::get('profil-desa', function () {
         return Inertia::render('village-profile');
     })->name('village-profile');
