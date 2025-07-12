@@ -33,12 +33,22 @@ export default function Resident({ query, villagers }: { query?: {search?: strin
     const acceptUser = useForm<{user_village_id?: number}>({})
     const _acceptUser = (id: number) => {
         acceptUser.data.user_village_id = id
-        acceptUser.patch(route("accept-user"), {
+        acceptUser.patch(route("accept-uservillage"), {
             preserveState: true,   
             preserveScroll: true,  
             replace: true 
         })
+    }
 
+    const changeUserRole = useForm<{user_village_id?: number, role?: string}>({})
+    const _changeUserRole = (id: number, role: string) => {
+        changeUserRole.data.user_village_id = id
+        changeUserRole.data.role = role
+        changeUserRole.patch(route("change-uservillage-role"), {
+            preserveState: true,   
+            preserveScroll: true,  
+            replace: true 
+        })
     }
 
     return (
@@ -83,7 +93,7 @@ export default function Resident({ query, villagers }: { query?: {search?: strin
                                     {v.is_pending ? <Badge variant={'destructive'}>Tertunda</Badge> : <Badge>Sah</Badge>}
                                 </TableCell>
                                 <TableCell>
-                                    <Select value={v.role}>
+                                    <Select value={v.role} onValueChange={r => _changeUserRole(v.id, r)}>
                                         <SelectTrigger>
                                             <SelectValue placeholder="Peran" />
                                         </SelectTrigger>

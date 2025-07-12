@@ -197,4 +197,29 @@ class VillageController extends Controller
             return Redirect::back()->with('error', 'Terjadi kesalahan saat menyetujui pengguna. Silakan coba lagi.');
         }
     }
+
+    public function changeUserVillageRole(Request $request) 
+    {
+        $request->validate([
+            'user_village_id' => 'required|integer|exists:user_villages,id',
+            'role' => 'required|string|in:admin,editor,member',
+        ]);
+
+        $userVillageId = $request->input('user_village_id');
+        $role = $request->input('role');
+        $userVillage = UserVillage::with('village')->find($userVillageId);
+
+        if (!$userVillage) {
+            return Redirect::back()->with('error', 'Pengguna tidak ditemukan.');
+        }
+
+        try {
+            $userVillage->role = $role;
+            $userVillage->save();
+
+            return Redirect::back()->with('success', 'Peran ' . $userVillage->user->name . ' berhasil diubah menjadi ' . $role . '.');
+        } catch (\Exception $e) {
+            return Redirect::back()->with('error', 'Terjadi kesalahan saat mengubah peran pengguna. Silakan coba lagi.');
+        }
+    }
 }
