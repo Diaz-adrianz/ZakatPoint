@@ -15,6 +15,10 @@ return new class extends Migration
             $table->id();
             $table->unsignedInteger('dependents');
             $table->decimal('amount', 18, 2);
+            $table->string('email');
+            $table->string('name');
+            $table->string('no_hp');
+            $table->enum('gender', ['bapak', 'ibu']);
             $table->foreignId('fitrah_session_id')
                 ->constrained('fitrah_zakat_periode_sessions')
                 ->cascadeOnDelete();

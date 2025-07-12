@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('gold_prices', function (Blueprint $table) {
+        Schema::create('silver_prices', function (Blueprint $table) {
             $table->id();
             $table->decimal('price', 18, 2);
             $table->date('date')->unique();
@@ -24,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('gold_prices');
+        Schema::dropIfExists('silver_prices');
     }
 };

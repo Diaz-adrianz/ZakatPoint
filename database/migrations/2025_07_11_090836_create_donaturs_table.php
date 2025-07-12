@@ -14,6 +14,10 @@ return new class extends Migration
         Schema::create('donaturs', function (Blueprint $table) {
             $table->id();
             $table->string('username');
+            $table->string('email');
+            $table->string('name');
+            $table->string('no_hp');
+            $table->enum('gender', ['bapak', 'ibu']);
             $table->decimal('nominal', 18, 2);
             $table->foreignId('donation_id')->constrained()->cascadeOnDelete();
             $table->foreignId('payment_id')->constrained()->cascadeOnDelete();

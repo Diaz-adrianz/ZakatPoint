@@ -4,9 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class MalZakat extends Model
+class GoldZakat extends Model
 {
-    protected $fillable = ['asset', 'gold', 'otherAssets', 'receivables', 'amount', 'village_id', 'payment_id'];
+    protected $fillable = [
+        'price', 'amount',
+        'email', 'name', 'no_hp', 'gender',
+        'village_id', 'payment_id',
+    ];
 
     public function village()
     {

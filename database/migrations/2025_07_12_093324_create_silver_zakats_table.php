@@ -11,17 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('income_zakats', function (Blueprint $table) {
+        Schema::create('silver_zakats', function (Blueprint $table) {
             $table->id();
-            $table->decimal('income_month', 18, 2)->default(0);
-            $table->decimal('income_plus', 18, 2)->default(0);
+            $table->decimal('price', 18, 2); // harga per gram perak
             $table->decimal('amount', 18, 2);
             $table->string('email');
             $table->string('name');
             $table->string('no_hp');
             $table->enum('gender', ['bapak', 'ibu']);
             $table->foreignId('village_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('payment_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('payment_id')->constrained('payments')->cascadeOnDelete();
             $table->timestamps();
         });
     }
@@ -31,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('income_zakats');
+        Schema::dropIfExists('silver_zakats');
     }
 };
