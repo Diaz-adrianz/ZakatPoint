@@ -88,10 +88,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('daftar-artikel/tambah', [ArticleController::class, 'store'])
          ->middleware('check_village_role:admin|editor')
          ->name('article.store');
-
-    Route::get('daftar-artikel/edit', function () {
-        return Inertia::render('edit-learning-material');
-    })->name('edit-learning-material');
+    Route::get('daftar-artikel/edit/{id}', [ArticleController::class, 'edit'])
+         ->middleware('check_village_role:admin|editor')
+         ->name('article.edit');
+    Route::post('daftar-artikel/edit/{id}', [ArticleController::class, 'update'])
+         ->middleware('check_village_role:admin|editor')
+         ->name('article.update');
 
 });
 

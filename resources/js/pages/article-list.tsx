@@ -81,8 +81,10 @@ export default function ArticleList({ query, articles }: { query?: { search?: st
                                                 <EyeIcon />
                                             </Link>
                                         </Button>
-                                        <Button variant={'outline'} size={'icon'}>
-                                            <Edit2Icon />
+                                        <Button variant={'outline'} size={'icon'} asChild>
+                                            <Link href={`/daftar-artikel/edit/${dat.id}`} target='_blank' prefetch>
+                                                <Edit2Icon />
+                                            </Link>
                                         </Button>
                                         <Button variant={'destructive'} size={'icon'}>
                                             <Trash2Icon />
