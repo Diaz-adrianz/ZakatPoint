@@ -83,10 +83,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 });
 
-Route::get('/api/provinces', [RegionController::class, 'getProvinces']);
-Route::get('/api/regencies/{provinceId}', [RegionController::class, 'getRegencies']);
-Route::get('/api/districts/{regencyId}', [RegionController::class, 'getDistricts']);
-Route::get('/api/villages/{districtId}', [RegionController::class, 'getVillages']);
-
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';
+require __DIR__.'/api.php';
