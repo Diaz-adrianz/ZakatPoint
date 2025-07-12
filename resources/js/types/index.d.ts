@@ -30,9 +30,9 @@ export interface SharedData {
     sidebarOpen: boolean;
     villageId: string;
     flash: {
-        success?: string | null,
-        error?: string | null,
-    }
+        success?: string | null;
+        error?: string | null;
+    };
     [key: string]: unknown;
 }
 

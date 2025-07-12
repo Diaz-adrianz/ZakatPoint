@@ -57,7 +57,7 @@ const adminNavItems: NavItem[] = [
 ];
 
 export function AppSidebar() {
-    const {villageId} = usePage<SharedData>().props
+    const { villageId } = usePage<SharedData>().props;
 
     return (
         <Sidebar collapsible="offcanvas" variant="inset">
@@ -76,13 +76,12 @@ export function AppSidebar() {
             <SidebarContent className="gap-6">
                 <SelectVillage />
                 <NavMain items={mainNavItems} />
-                {
-                    !!villageId && 
+                {!!villageId && (
                     <>
                         <NavMain label="Keuangan" items={financeNavItems} />
                         <NavMain label="Admin" items={adminNavItems} />
                     </>
-                }
+                )}
             </SidebarContent>
 
             <SidebarFooter>

@@ -23,47 +23,47 @@ type Query = {
     is_pending?: boolean;
 };
 
-export default function Resident({ query, villagers }: { query?: {search?: string}, villagers: PaginatedResponse<UserVillage> }) {
-    const { flash } = usePage<SharedData>().props 
+export default function Resident({ query, villagers }: { query?: { search?: string }; villagers: PaginatedResponse<UserVillage> }) {
+    const { flash } = usePage<SharedData>().props;
 
     const list = useForm<Query>({
-        search: query?.search
+        search: query?.search,
     });
 
-    const acceptUser = useForm<{user_village_id?: number}>({})
+    const acceptUser = useForm<{ user_village_id?: number }>({});
     const _acceptUser = (id: number) => {
-        acceptUser.data.user_village_id = id
-        acceptUser.patch(route("accept-uservillage"), {
-            preserveState: true,   
-            preserveScroll: true,  
-            replace: true 
-        })
-    }
+        acceptUser.data.user_village_id = id;
+        acceptUser.patch(route('accept-uservillage'), {
+            preserveState: true,
+            preserveScroll: true,
+            replace: true,
+        });
+    };
 
-    const changeUserRole = useForm<{user_village_id?: number, role?: string}>({})
+    const changeUserRole = useForm<{ user_village_id?: number; role?: string }>({});
     const _changeUserRole = (id: number, role: string) => {
-        changeUserRole.data.user_village_id = id
-        changeUserRole.data.role = role
-        changeUserRole.patch(route("change-uservillage-role"), {
-            preserveState: true,   
-            preserveScroll: true,  
-            replace: true 
-        })
-    }
+        changeUserRole.data.user_village_id = id;
+        changeUserRole.data.role = role;
+        changeUserRole.patch(route('change-uservillage-role'), {
+            preserveState: true,
+            preserveScroll: true,
+            replace: true,
+        });
+    };
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Penduduk" />
 
-            <Flash flash={flash}/>
+            <Flash flash={flash} />
 
             <form
                 onSubmit={(e) => {
                     e.preventDefault();
                     list.get(route('resident'), {
-                        preserveState: true,   
-                        preserveScroll: true,  
-                        replace: true 
+                        preserveState: true,
+                        preserveScroll: true,
+                        replace: true,
                     });
                 }}
                 className="flex flex-wrap gap-3"
@@ -93,7 +93,7 @@ export default function Resident({ query, villagers }: { query?: {search?: strin
                                     {v.is_pending ? <Badge variant={'destructive'}>Tertunda</Badge> : <Badge>Sah</Badge>}
                                 </TableCell>
                                 <TableCell>
-                                    <Select value={v.role} onValueChange={r => _changeUserRole(v.id, r)}>
+                                    <Select value={v.role} onValueChange={(r) => _changeUserRole(v.id, r)}>
                                         <SelectTrigger>
                                             <SelectValue placeholder="Peran" />
                                         </SelectTrigger>
@@ -105,7 +105,7 @@ export default function Resident({ query, villagers }: { query?: {search?: strin
                                     </Select>
                                 </TableCell>
                                 <TableCell>
-                                    <div className="flex gap-3 items-center">
+                                    <div className="flex items-center gap-3">
                                         {v.is_pending ? (
                                             <Button variant={'outline'} size={'icon'} onClick={() => _acceptUser(v.id)}>
                                                 <CheckIcon />
