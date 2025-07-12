@@ -53,15 +53,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('penduduk', function () {
         return Inertia::render('resident');
     })->name('resident');
+
+    // VILLAGE / DESA 
     Route::get('profil-desa', function () {
         return Inertia::render('village-profile');
     })->name('village-profile');
     Route::get('cari-desa', function () {
         return Inertia::render('explore-villages');
     })->name('explore-villages');
-    Route::get('tambah-desa', function () {
-        return Inertia::render('new-village');
-    })->name('new-village');
+    Route::get('tambah-desa', [VillageController::class, 'create'])->name('new-village');
+    Route::post('tambah-desa', [VillageController::class, 'store'])->name('village.store');
+
     Route::get('zakat-fitrah/tambah-periode', function () {
         return Inertia::render('add-zakat-fitrah-periode');
     })->name('add-zakat-fitrah-periode');
