@@ -1,3 +1,4 @@
+import ChatBotArticle from '@/components/chatbot-article';
 import Container from '@/components/container';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -73,6 +74,8 @@ const ArticleExplore = ({ query, articles }: { query?: { search?: string }; arti
                     }
                 </div>
             </Container>
+
+            <ChatBotArticle />
         </VisitorLayout>
     );
 };

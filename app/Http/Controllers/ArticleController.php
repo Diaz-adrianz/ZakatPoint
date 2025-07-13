@@ -168,4 +168,21 @@ class ArticleController extends Controller
             return Redirect::back()->with('error', 'Terjadi kesalahan saat menghapus artikel. Silakan coba lagi.');
         }
     }
+
+    public function chat(Request $request) 
+    {
+        $validatedData = $request->validate([
+            'message' => 'required|string',
+        ]);
+
+        try {
+            return response()->json([
+                'message' => 'PONG'
+            ] , 200);
+        } catch (\Exception $th) {
+            return response()->json([
+                'message' => 'Maaf, ada kesalahan teknis saat saya mencoba membuat respons.'
+            ] , 200);
+        }
+    }
 }

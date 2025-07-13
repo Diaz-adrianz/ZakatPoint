@@ -33,6 +33,7 @@ export interface SharedData {
         success?: string | null;
         error?: string | null;
     };
+    csrfToken: string | null
     [key: string]: unknown;
 }
 
