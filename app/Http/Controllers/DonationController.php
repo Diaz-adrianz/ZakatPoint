@@ -84,9 +84,9 @@ class DonationController extends Controller
 
     public function edit($id)
     {
-        $article = Article::findOrFail($id);
-        return Inertia::render('article-edit', [
-            'article' => $article,
+        $donation = Donation::findOrFail($id);
+        return Inertia::render('donation-edit', [
+            'donation' => $donation,
         ]);
     }
 
@@ -134,71 +134,47 @@ class DonationController extends Controller
 
     public function update(Request $request, $id)
     {
-        $article = Article::findOrFail($id);
+        $donation = Donation::findOrFail($id);
 
         $validatedData = $request->validate([
             'title' => 'required|string|max:255',
-            'content' => 'required|string',
+            'target' => 'nullable|numeric|min:0',
+            'description' => 'required|string',
         ]);
 
         try {
             $newSlug = Str::slug($validatedData['title']);
 
-            if ($newSlug !== $article->slug) {
+            if ($newSlug !== $donation->slug) {
                 $originalSlug = $newSlug;
                 $count = 1;
-                while (Article::where('slug', $newSlug)->where('id', '!=', $article->id)->exists()) {
+                while (Donation::where('slug', $newSlug)->where('id', '!=', $donation->id)->exists()) {
                     $newSlug = $originalSlug . '-' . $count++;
                 }
-                $article->slug = $newSlug;
+                $donation->slug = $newSlug;
             }
 
-            $article->title = $validatedData['title'];
-            $article->content = $validatedData['content'];
-            $article->save();
+            $donation->title = $validatedData['title'];
+            $donation->target = $validatedData['target'];
+            $donation->description = $validatedData['description'];
+            $donation->save();
 
-            return redirect()->route('article.list')->with('success', 'Artikel "' . $article->title . '" berhasil diperbarui.');
+            return redirect()->route('donation.list')->with('success', 'Program sedekah "' . $donation->title . '" berhasil diperbarui.');
 
         } catch (\Exception $e) {
-            // Log the error for debugging
-            \Log::error('Error updating article: ' . $e->getMessage(), [
-                'user_id' => Auth::id(),
-                'article_id' => $id,
-                'village_id' => $villageIdFromCookie,
-                'exception' => $e
-            ]);
-
-            // Redirect back with an error message
-            return Redirect::back()->with('error', 'Terjadi kesalahan saat memperbarui artikel. Silakan coba lagi.');
+            return Redirect::back()->with('error', 'Terjadi kesalahan saat memperbarui program sedekah. Silakan coba lagi.');
         }
     }
 
     public function destroy($id)
     {
-        $article = Article::findOrFail($id);
+        $donation = Donation::findOrFail($id);
 
         try {
-            $article->delete();
-            return redirect()->route('article.list')->with('success', 'Artikel "' . $article->title . '" berhasil dihapus.');
+            $donation->delete();
+            return redirect()->route('donation.list')->with('success', 'Program sedekah "' . $donation->title . '" berhasil dihapus.');
         } catch (\Exception $e) {
-            return Redirect::back()->with('error', 'Terjadi kesalahan saat menghapus artikel. Silakan coba lagi.');
-        }
-    }
-
-    public function chat(Request $request) 
-    {
-        $validatedData = $request->validate([
-            'message' => 'required|string',
-        ]);
-
-        try {
-            return response()->json([
-                'message' => 'PONG'
-            ] , 200);
-        } catch (\Exception $th) {
-            return response()->json([
-                'message' => 'Maaf, ada kesalahan teknis saat saya mencoba membuat respons.'
-            ] , 200);
+            return Redirect::back()->with('error', 'Terjadi kesalahan saat menghapus program sedekah. Silakan coba lagi.');
         }
     }
 }

@@ -72,9 +72,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('zakat-fitrah/edit-periode', function () {
         return Inertia::render('edit-zakat-fitrah-periode');
     })->name('edit-zakat-fitrah-periode');
-    Route::get('donasi/edit', function () {
-        return Inertia::render('edit-donation');
-    })->name('edit-donation');
 
     // ARTICLE / ARTIKEL BELAJAR 
     Route::get('daftar-artikel', [ArticleController::class, 'list'])
@@ -98,14 +95,21 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // DONATION / SEDEKAH
     Route::get('daftar-sedekah', [DonationController::class, 'list'])
         ->name('donation.list');
+    Route::delete('daftar-sedekah/{id}', [DonationController::class, 'destroy'])
+        ->middleware('check_village_role:admin|editor')
+        ->name('donation.destroy');
     Route::get('daftar-sedekah/tambah', [DonationController::class, 'add'])
         ->middleware('check_village_role:admin|editor')
         ->name('donation.add');
     Route::post('daftar-sedekah/tambah', [DonationController::class, 'store'])
         ->middleware('check_village_role:admin|editor')
         ->name('donation.store');
-
-
+    Route::get('daftar-sedekah/edit/{id}', [DonationController::class, 'edit'])
+         ->middleware('check_village_role:admin|editor')
+         ->name('donation.edit');
+    Route::post('daftar-sedekah/edit/{id}', [DonationController::class, 'update'])
+         ->middleware('check_village_role:admin|editor')
+         ->name('donation.update');
 });
 
 require __DIR__.'/settings.php';

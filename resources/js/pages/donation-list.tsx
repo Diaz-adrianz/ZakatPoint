@@ -117,7 +117,7 @@ export default function DonationList({
                                             </Link>
                                         </Button>
                                         <Button variant={'outline'} size={'icon'} asChild>
-                                            <Link href={route('article.edit', { id: dat.id })}>
+                                            <Link href={route('donation.edit', { id: dat.id })}>
                                                 <Edit2Icon />
                                             </Link>
                                         </Button>
