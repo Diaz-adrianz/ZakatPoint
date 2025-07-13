@@ -16,10 +16,10 @@ export default function VisitorLayout({ children }: PropsWithChildren<AuthLayout
                 <Container className="flex flex-wrap items-center gap-3 py-3">
                     <h1 className="grow text-2xl font-bold">ZakatPoint</h1>
                     <div className="flex items-center gap-3 overflow-x-auto">
-                        <Button variant={page.url == '/jelajahi-materi-belajar' ? 'default' : 'ghost'} asChild>
-                            <Link href={route('explore-learning-materials')}>Belajar</Link>
+                        <Button variant={page.url == '/artikel' ? 'secondary' : 'ghost'} asChild>
+                            <Link href={route('article.explore')}>Artikel</Link>
                         </Button>
-                        <Button variant={page.url == '/jelajahi-donasi' ? 'default' : 'ghost'} asChild>
+                        <Button variant={page.url == '/jelajahi-donasi' ? 'secondary' : 'ghost'} asChild>
                             <Link href={route('explore-donations')}>Donasi</Link>
                         </Button>
                         {auth.user ? (

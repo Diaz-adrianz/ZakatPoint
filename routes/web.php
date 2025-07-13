@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\RegionController;
 use App\Http\Controllers\VillageController;
+use App\Http\Controllers\ArticleController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -9,9 +10,11 @@ Route::get('/', function () {
     return Inertia::render('home');
 })->name('home');
 
-Route::get('jelajahi-materi-belajar', function () {
-    return Inertia::render('explore-learning-materials');
-})->name('explore-learning-materials');
+Route::get('artikel', [ArticleController::class, 'explore'])
+     ->name('article.explore');
+
+Route::get('artikel/{slug}', [ArticleController::class, 'view'])
+     ->name('article.view');
 
 Route::get('jelajahi-donasi', function () {
     return Inertia::render('explore-donations');
@@ -47,10 +50,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('donasi', function () {
         return Inertia::render('donations');
     })->name('donations');
-    Route::get('materi-belajar', function () {
-        return Inertia::render('learning-materials');
-    })->name('learning-materials');
-
     
     // VILLAGE / DESA 
     Route::get('penduduk', [VillageController::class, 'getVillageUsers'])->name('resident');
@@ -81,12 +80,25 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('donasi/edit', function () {
         return Inertia::render('edit-donation');
     })->name('edit-donation');
-    Route::get('materi-belajar/tambah', function () {
-        return Inertia::render('add-learning-material');
-    })->name('add-learning-material');
-    Route::get('materi-belajar/edit', function () {
-        return Inertia::render('edit-learning-material');
-    })->name('edit-learning-material');
+
+    // ARTICLE / ARTIKEL BELAJAR 
+    Route::get('daftar-artikel', [ArticleController::class, 'list'])
+         ->name('article.list');
+    Route::delete('daftar-artikel/{id}', [ArticleController::class, 'destroy'])
+         ->middleware('check_village_role:admin|editor')
+         ->name('article.destroy');
+    Route::get('daftar-artikel/tambah', [ArticleController::class, 'add'])
+         ->middleware('check_village_role:admin|editor')
+         ->name('article.add');
+    Route::post('daftar-artikel/tambah', [ArticleController::class, 'store'])
+         ->middleware('check_village_role:admin|editor')
+         ->name('article.store');
+    Route::get('daftar-artikel/edit/{id}', [ArticleController::class, 'edit'])
+         ->middleware('check_village_role:admin|editor')
+         ->name('article.edit');
+    Route::post('daftar-artikel/edit/{id}', [ArticleController::class, 'update'])
+         ->middleware('check_village_role:admin|editor')
+         ->name('article.update');
 
 });
 

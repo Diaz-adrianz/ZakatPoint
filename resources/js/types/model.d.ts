@@ -51,3 +51,13 @@ export interface UserVillage {
     village?: Village;
     user?: User;
 }
+
+export interface Article {
+    id: number;
+    title: string;
+    slug: string;
+    content: string;
+    village_id: number;
+    village?: Village;
+    created_at?: string;
+}
