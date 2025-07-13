@@ -53,11 +53,11 @@ export interface UserVillage {
 }
 
 export interface Article {
-    id: number
-    title: string
-    slug: string
-    content: string
-    village_id: number
-    village?: Village
-    created_at?: string
+    id: number;
+    title: string;
+    slug: string;
+    content: string;
+    village_id: number;
+    village?: Village;
+    created_at?: string;
 }

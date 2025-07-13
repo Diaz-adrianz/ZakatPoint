@@ -7,7 +7,7 @@ import AppLayout from '@/layouts/app-layout';
 import { SharedData, type BreadcrumbItem } from '@/types';
 import { Article, PaginatedResponse } from '@/types/model';
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
-import {  ChevronLeftIcon, ChevronRightIcon, Edit2Icon, EyeIcon, PlusIcon, Trash2Icon, UserRoundXIcon } from 'lucide-react';
+import { ChevronLeftIcon, ChevronRightIcon, Edit2Icon, EyeIcon, PlusIcon, Trash2Icon } from 'lucide-react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -17,7 +17,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 export default function ArticleList({ query, articles }: { query?: { search?: string }; articles: PaginatedResponse<Article> }) {
-    const { flash } = usePage<SharedData>().props
+    const { flash } = usePage<SharedData>().props;
 
     const list = useForm<{ search?: string }>({
         search: query?.search,
@@ -27,23 +27,23 @@ export default function ArticleList({ query, articles }: { query?: { search?: st
             preserveState: true,
             preserveScroll: true,
             replace: true,
-        })
-    }
+        });
+    };
 
-    const destroy = useForm()
+    const destroy = useForm();
     const _destroy = (id: number) => {
         destroy.delete(route('article.destroy', { id }), {
             preserveState: true,
             preserveScroll: true,
             replace: true,
-        })
-    }
+        });
+    };
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Artikel" />
 
-            <Flash flash={flash}/>
+            <Flash flash={flash} />
 
             <div>
                 <Button asChild>
@@ -57,7 +57,7 @@ export default function ArticleList({ query, articles }: { query?: { search?: st
             <form
                 onSubmit={(e) => {
                     e.preventDefault();
-                    _list()
+                    _list();
                 }}
                 className="flex flex-wrap gap-3"
             >
@@ -70,7 +70,7 @@ export default function ArticleList({ query, articles }: { query?: { search?: st
                 <Table>
                     <TableHeader>
                         <TableRow>
-                            <TableHead className='w-8'></TableHead>
+                            <TableHead className="w-8"></TableHead>
                             <TableHead>Judul</TableHead>
                             <TableHead></TableHead>
                         </TableRow>
@@ -86,12 +86,12 @@ export default function ArticleList({ query, articles }: { query?: { search?: st
                                 <TableCell>
                                     <div className="flex items-center gap-3">
                                         <Button variant={'outline'} size={'icon'} asChild>
-                                            <Link href={route('article.view', {slug: dat.slug})} target='_blank'>
+                                            <Link href={route('article.view', { slug: dat.slug })} target="_blank">
                                                 <EyeIcon />
                                             </Link>
                                         </Button>
                                         <Button variant={'outline'} size={'icon'} asChild>
-                                            <Link href={route('article.edit', {id: dat.id})}>
+                                            <Link href={route('article.edit', { id: dat.id })}>
                                                 <Edit2Icon />
                                             </Link>
                                         </Button>

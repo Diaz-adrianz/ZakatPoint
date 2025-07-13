@@ -21,12 +21,12 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 export default function ArticleAdd() {
-    const { flash } = usePage<SharedData>().props
+    const { flash } = usePage<SharedData>().props;
 
-    const store = useForm<Required<{title: string, content: string}>>({
+    const store = useForm<Required<{ title: string; content: string }>>({
         title: '',
-        content: ''
-    })
+        content: '',
+    });
 
     const _store = () => {
         store.post(route('article.store'), {
@@ -38,18 +38,21 @@ export default function ArticleAdd() {
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Tambah artikel" />
 
-            <Flash flash={flash}/>
+            <Flash flash={flash} />
 
             <Card>
                 <CardContent>
-                    <form onSubmit={e => {
-                        e.preventDefault()
-                        _store()
-                    }} className='flex flex-col gap-6'>
+                    <form
+                        onSubmit={(e) => {
+                            e.preventDefault();
+                            _store();
+                        }}
+                        className="flex flex-col gap-6"
+                    >
                         <div className="grid gap-2">
                             <Label>Judul</Label>
                             <Input
-                                name='title'
+                                name="title"
                                 placeholder="Judul"
                                 value={store.data.title}
                                 onChange={(e) => store.setData('title', e.target.value)}
@@ -59,10 +62,7 @@ export default function ArticleAdd() {
 
                         <div className="grid gap-2">
                             <Label>Konten</Label>
-                            <RichTextEditor
-                                value={store.data.content}
-                                onChange={(v) => store.setData('content', v)}
-                            />
+                            <RichTextEditor value={store.data.content} onChange={(v) => store.setData('content', v)} />
                             <InputError className="mt-2" message={store.errors.content} />
                         </div>
 

@@ -214,29 +214,29 @@
     .no-scrollbar {
         scrollbar-width: none;
         -ms-overflow-style: none;
-      }
-    
+    }
+
     .no-scrollbar::-webkit-scrollbar {
-    @apply hidden;
+        @apply hidden;
     }
 
     .scrollbar-custom::-webkit-scrollbar {
-    @apply h-3 w-3;
+        @apply h-3 w-3;
     }
 
     .scrollbar-custom::-webkit-scrollbar-thumb {
-    @apply rounded-full bg-neutral-400;
+        @apply rounded-full bg-neutral-400;
     }
 
     .scrollbar-custom::-webkit-scrollbar-track {
-    @apply bg-neutral-200;
+        @apply bg-neutral-200;
     }
 
     .ql-toolbar {
-    @apply !border-input bg-secondary rounded-t-sm shadow-none;
+        @apply rounded-t-sm !border-input bg-secondary shadow-none;
     }
 
     .ql-container {
-    @apply !border-input min-h-64 rounded-b-sm shadow-none;
+        @apply min-h-64 rounded-b-sm !border-input shadow-none;
     }
 }

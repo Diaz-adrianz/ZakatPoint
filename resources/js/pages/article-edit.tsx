@@ -22,35 +22,38 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 export default function ArticleEdit({ article }: { article: Article }) {
-    const { flash } = usePage<SharedData>().props
+    const { flash } = usePage<SharedData>().props;
 
-    const update = useForm<Required<{title: string, content: string}>>({
+    const update = useForm<Required<{ title: string; content: string }>>({
         title: article.title,
-        content: article.content
-    })
+        content: article.content,
+    });
 
     const _update = () => {
         update.post(route('article.update', { id: article.id }), {
             preserveScroll: true,
         });
     };
-    
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Edit artikel" />
 
-            <Flash flash={flash}/>
+            <Flash flash={flash} />
 
             <Card>
                 <CardContent>
-                    <form onSubmit={e => {
-                        e.preventDefault()
-                        _update()
-                    }} className='flex flex-col gap-6'>
+                    <form
+                        onSubmit={(e) => {
+                            e.preventDefault();
+                            _update();
+                        }}
+                        className="flex flex-col gap-6"
+                    >
                         <div className="grid gap-2">
                             <Label>Judul</Label>
                             <Input
-                                name='title'
+                                name="title"
                                 placeholder="Judul"
                                 value={update.data.title}
                                 onChange={(e) => update.setData('title', e.target.value)}
@@ -60,10 +63,7 @@ export default function ArticleEdit({ article }: { article: Article }) {
 
                         <div className="grid gap-2">
                             <Label>Konten</Label>
-                            <RichTextEditor
-                                value={update.data.content}
-                                onChange={(v) => update.setData('content', v)}
-                            />
+                            <RichTextEditor value={update.data.content} onChange={(v) => update.setData('content', v)} />
                             <InputError className="mt-2" message={update.errors.content} />
                         </div>
 
