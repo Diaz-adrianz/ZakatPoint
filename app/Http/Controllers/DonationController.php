@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Donation;
 use App\Models\Donatur;
-use App\Models\Article;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -53,24 +52,25 @@ class DonationController extends Controller
         $limit = $request->query('limit', 20);
         $limit = min(max(1, (int)$limit), 100);
 
-        $query = Article::query()
-                        ->with('village:id,village');
+        $query = Donation::query()
+                        ->with('village:id,village')
+                        ->withSum('donaturs', 'nominal');
 
         if ($search) {
             $query->where('title', 'like', '%' . $search . '%')
                   ->orWhere('slug', 'like', '%' . $search . '%');
         }
 
-        $articles = $query->orderBy('created_at', 'desc')->paginate($limit);
+        $donations = $query->orderBy('created_at', 'desc')->paginate($limit);
 
-        $articles->through(function ($article) {
-            $plainContent = strip_tags($article->content);
-            $article->content = Str::limit($plainContent, 100);
-            return $article;
+        $donations->through(function ($donation) {
+            $plainDescription = strip_tags($donation->description);
+            $donation->description = Str::limit($plainDescription, 100);
+            return $donation;
         });
 
-        return Inertia::render('article-explore', [
-            'articles' => $articles,
+        return Inertia::render('donation-explore', [
+            'donations' => $donations,
             'query' => [
                 'search' => $search,
             ]
@@ -92,11 +92,12 @@ class DonationController extends Controller
 
     public function view($slug)
     {
-        $article = Article::where('slug', $slug)
+        $donation = Donation::where('slug', $slug)
                           ->with("village")
+                          ->withSum('donaturs', 'nominal')
                           ->firstOrFail();
-        return Inertia::render('article-view', [
-            'article' => $article,
+        return Inertia::render('donation-view', [
+            'donation' => $donation,
         ]); 
     }
 

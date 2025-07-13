@@ -20,7 +20,7 @@ export default function VisitorLayout({ children }: PropsWithChildren<AuthLayout
                             <Link href={route('article.explore')}>Artikel</Link>
                         </Button>
                         <Button variant={page.url == '/sedekah' ? 'secondary' : 'ghost'} asChild>
-                            <Link href={route('explore-donations')}>Sedekah</Link>
+                            <Link href={route('donation.explore')}>Sedekah</Link>
                         </Button>
                         {auth.user ? (
                             <Button variant={'outline'} asChild>

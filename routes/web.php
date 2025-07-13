@@ -17,9 +17,12 @@ Route::get('artikel', [ArticleController::class, 'explore'])
 Route::get('artikel/{slug}', [ArticleController::class, 'view'])
      ->name('article.view');
 
-Route::get('jelajahi-donasi', function () {
-    return Inertia::render('explore-donations');
-})->name('explore-donations');
+Route::get('donasi', [DonationController::class, 'explore'])
+     ->name('donation.explore');
+
+Route::get('donasi/{slug}', [DonationController::class, 'view'])
+     ->name('donation.view');
+
 
 Route::get('bayar-zakat', function () {
     return Inertia::render('pay-zakat');
