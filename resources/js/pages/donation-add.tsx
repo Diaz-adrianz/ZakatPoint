@@ -38,7 +38,7 @@ export default function DonationAdd() {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Tambah program donasi" />
+            <Head title="Tambah program sedekah" />
 
             <Flash flash={flash} />
 

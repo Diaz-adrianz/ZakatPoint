@@ -26,16 +26,14 @@ const DonationView = ({ donation }: { donation: Donation }) => {
                     <p className="typo-p text-muted-foreground">{moment(donation.created_at).fromNow()}</p>
                 </div>
 
-                {
-                    donation.target && donation.target > 0 ?
-                        <div className='max-w-md mb-3 items-center'>
-                            <Progress value={Math.min(100, ((donation.donaturs_sum_nominal ?? 0) / donation.target) * 100)} />
-                            <small className='!typo-small text-muted-foreground whitespace-nowrap'>
-                            Terkumpul {formatMoney(donation.donaturs_sum_nominal)} / {formatMoney(donation.target)} 
-                            </small>
-                        </div>
-                    : null
-                }
+                {donation.target && donation.target > 0 ? (
+                    <div className="mb-3 max-w-md items-center">
+                        <Progress value={Math.min(100, ((donation.donaturs_sum_nominal ?? 0) / donation.target) * 100)} />
+                        <small className="!typo-small whitespace-nowrap text-muted-foreground">
+                            Terkumpul {formatMoney(donation.donaturs_sum_nominal)} / {formatMoney(donation.target)}
+                        </small>
+                    </div>
+                ) : null}
 
                 <div className="ql-editor !p-0" dangerouslySetInnerHTML={{ __html: safeContent ?? '' }}></div>
             </Container>

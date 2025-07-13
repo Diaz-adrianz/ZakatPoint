@@ -127,9 +127,9 @@ class DonationController extends Controller
                 'village_id' => $villageId,
             ]);
 
-            return redirect()->route('donation.list')->with('success', 'Program donasi "' . $donation->title . '" berhasil ditambahkan.');
+            return redirect()->route('donation.list')->with('success', 'Program sedekah "' . $donation->title . '" berhasil ditambahkan.');
         } catch (\Exception $e) {
-            return Redirect::back()->with('error', 'Terjadi kesalahan saat menambahkan program donasi. Silakan coba lagi.');
+            return Redirect::back()->with('error', 'Terjadi kesalahan saat menambahkan program sedekah. Silakan coba lagi.');
         }
     }
 

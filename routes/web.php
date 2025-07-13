@@ -17,10 +17,10 @@ Route::get('artikel', [ArticleController::class, 'explore'])
 Route::get('artikel/{slug}', [ArticleController::class, 'view'])
      ->name('article.view');
 
-Route::get('donasi', [DonationController::class, 'explore'])
+Route::get('sedekah', [DonationController::class, 'explore'])
      ->name('donation.explore');
 
-Route::get('donasi/{slug}', [DonationController::class, 'view'])
+Route::get('sedekah/{slug}', [DonationController::class, 'view'])
      ->name('donation.view');
 
 

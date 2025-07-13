@@ -26,10 +26,10 @@ const DonationExplore = ({ query, donations }: { query?: { search?: string }; do
             {/* HERO  */}
             <Container className="flex flex-col items-center gap-3 text-center">
                 <h1 className="typo-h1 max-w-3xl">Beri Dampak Sekarang!</h1>
-                 <p className="typo-p mb-12 max-w-3xl text-muted-foreground">
-                     Jelajahi beragam program donasi yang membutuhkan dukungan. Setiap kontribusi Anda memberikan dampak nyata.
-                 </p>
-                
+                <p className="typo-p mb-12 max-w-3xl text-muted-foreground">
+                    Jelajahi beragam program sedekah yang membutuhkan dukungan. Setiap kontribusi Anda memberikan dampak nyata.
+                </p>
+
                 <form
                     onSubmit={(e) => {
                         e.preventDefault();
@@ -60,14 +60,14 @@ const DonationExplore = ({ query, donations }: { query?: { search?: string }; do
                                 <CardDescription>Desa {dat.village?.village}</CardDescription>
                             </CardHeader>
                             <CardContent>
-                                {
-                                    dat.target && dat.target > 0 ?
-                                        <div className='max-w-md flex gap-3 mb-3 items-center'>
-                                            <Progress value={Math.min(100, ((dat.donaturs_sum_nominal ?? 0) / dat.target) * 100)} />
-                                            <small className='!typo-small text-muted-foreground whitespace-nowrap'>{formatMoney(dat.donaturs_sum_nominal)}</small>
-                                        </div>
-                                    : null
-                                }
+                                {dat.target && dat.target > 0 ? (
+                                    <div className="mb-3 flex max-w-md items-center gap-3">
+                                        <Progress value={Math.min(100, ((dat.donaturs_sum_nominal ?? 0) / dat.target) * 100)} />
+                                        <small className="!typo-small whitespace-nowrap text-muted-foreground">
+                                            {formatMoney(dat.donaturs_sum_nominal)}
+                                        </small>
+                                    </div>
+                                ) : null}
                                 {dat.description}
                             </CardContent>
                         </Card>
@@ -75,7 +75,6 @@ const DonationExplore = ({ query, donations }: { query?: { search?: string }; do
                 </div>
 
                 <div className="flex flex-wrap gap-3">
-                    
                     {donations.links.map((l, i) => (
                         <Button key={i} variant={l.label == donations.current_page.toString() ? 'secondary' : 'outline'} size={'sm'} asChild>
                             <Link href={l.url ?? '#'}>
@@ -90,5 +89,3 @@ const DonationExplore = ({ query, donations }: { query?: { search?: string }; do
 };
 
 export default DonationExplore;
-
-

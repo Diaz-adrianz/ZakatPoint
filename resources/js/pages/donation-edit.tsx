@@ -25,7 +25,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 export default function DonationEdit({ donation }: { donation: Donation }) {
     const { flash } = usePage<SharedData>().props;
 
-    const update = useForm<Required<{ title: string; target: number, description: string }>>({
+    const update = useForm<Required<{ title: string; target: number; description: string }>>({
         title: donation.title,
         target: donation.target ?? 0,
         description: donation.description,
