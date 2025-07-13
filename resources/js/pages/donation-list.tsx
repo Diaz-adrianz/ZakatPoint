@@ -1,6 +1,6 @@
 import Flash from '@/components/flash';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -18,7 +18,15 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-export default function DonationList({ query, sumAllNominal, donations }: { query?: { search?: string }; sumAllNominal: number, donations: PaginatedResponse<Donation> }) {
+export default function DonationList({
+    query,
+    sumAllNominal,
+    donations,
+}: {
+    query?: { search?: string };
+    sumAllNominal: number;
+    donations: PaginatedResponse<Donation>;
+}) {
     const { flash } = usePage<SharedData>().props;
 
     const list = useForm<{ search?: string }>({
@@ -49,18 +57,18 @@ export default function DonationList({ query, sumAllNominal, donations }: { quer
 
             <div>
                 <Button asChild>
-                    <Link href={route('article.add')}>
+                    <Link href={route('donation.add')}>
                         <PlusIcon />
                         Program sedekah baru
                     </Link>
                 </Button>
             </div>
 
-            <div className="flex gap-3 flex-wrap">
-                <Card className='min-w-80'>
+            <div className="flex flex-wrap gap-3">
+                <Card className="min-w-80">
                     <CardHeader>
                         <CardDescription>Total terkumpul</CardDescription>
-                        <CardTitle className='typo-h3'>{formatMoney(sumAllNominal, {shorten: true})}</CardTitle>
+                        <CardTitle className="typo-h3">{formatMoney(sumAllNominal, { shorten: true })}</CardTitle>
                     </CardHeader>
                 </Card>
             </div>
@@ -97,7 +105,10 @@ export default function DonationList({ query, sumAllNominal, donations }: { quer
                                     <p className="!typo-p">{dat.title}</p>
                                     <small className="!typo-small text-muted-foreground">{dat.slug}</small>
                                 </TableCell>
-                                <TableCell></TableCell>
+                                <TableCell>
+                                    <p className="!typo-p">{formatMoney(dat.donaturs_sum_nominal)}</p>
+                                    <small className="!typo-small text-muted-foreground">Target: {formatMoney(dat.target ?? 0)}</small>
+                                </TableCell>
                                 <TableCell>
                                     <div className="flex items-center gap-3">
                                         <Button variant={'outline'} size={'icon'} asChild>

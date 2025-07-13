@@ -79,7 +79,7 @@ class DonationController extends Controller
 
     public function add()
     {
-        return Inertia::render('article-add');
+        return Inertia::render('donation-add');
     }
 
     public function edit($id)
@@ -106,27 +106,29 @@ class DonationController extends Controller
 
         $validatedData = $request->validate([
             'title' => 'required|string|max:255',
-            'content' => 'required|string',
+            'target' => 'nullable|numeric|min:0',
+            'description' => 'required|string',
         ]);
-
+        
         try {
             $slug = Str::slug($validatedData['title']);
             $originalSlug = $slug;
             $count = 1;
-            while (Article::where('slug', $slug)->exists()) {
+            while (Donation::where('slug', $slug)->exists()) {
                 $slug = $originalSlug . '-' . $count++;
             }
 
-            $article = Article::create([
+            $donation = Donation::create([
                 'title' => $validatedData['title'],
                 'slug' => $slug,
-                'content' => $validatedData['content'],
+                'description' => $validatedData['description'],
+                'target' => $validatedData['target'],
                 'village_id' => $villageId,
             ]);
 
-            return redirect()->route('article.list')->with('success', 'Artikel "' . $article->title . '" berhasil ditambahkan.');
+            return redirect()->route('donation.list')->with('success', 'Program donasi "' . $donation->title . '" berhasil ditambahkan.');
         } catch (\Exception $e) {
-            return Redirect::back()->with('error', 'Terjadi kesalahan saat menambahkan artikel. Silakan coba lagi.');
+            return Redirect::back()->with('error', 'Terjadi kesalahan saat menambahkan program donasi. Silakan coba lagi.');
         }
     }
 

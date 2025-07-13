@@ -48,9 +48,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('zakat-fitrah', function () {
         return Inertia::render('zakat-fitrah');
     })->name('zakat-fitrah');
-    Route::get('donasi', function () {
-        return Inertia::render('donations');
-    })->name('donations');
     
     // VILLAGE / DESA 
     Route::get('penduduk', [VillageController::class, 'getVillageUsers'])->name('resident');
@@ -75,9 +72,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('zakat-fitrah/edit-periode', function () {
         return Inertia::render('edit-zakat-fitrah-periode');
     })->name('edit-zakat-fitrah-periode');
-    Route::get('donasi/tambah', function () {
-        return Inertia::render('add-donation');
-    })->name('add-donation');
     Route::get('donasi/edit', function () {
         return Inertia::render('edit-donation');
     })->name('edit-donation');
@@ -104,6 +98,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // DONATION / SEDEKAH
     Route::get('daftar-sedekah', [DonationController::class, 'list'])
         ->name('donation.list');
+    Route::get('daftar-sedekah/tambah', [DonationController::class, 'add'])
+        ->middleware('check_village_role:admin|editor')
+        ->name('donation.add');
+    Route::post('daftar-sedekah/tambah', [DonationController::class, 'store'])
+        ->middleware('check_village_role:admin|editor')
+        ->name('donation.store');
+
 
 });
 
