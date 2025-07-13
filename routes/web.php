@@ -1,7 +1,14 @@
 <?php
 
+use App\Http\Controllers\FitrahZakatController;
+use App\Http\Controllers\GoldZakatController;
+use App\Http\Controllers\IncomeZakatController;
 use App\Http\Controllers\RegionController;
+use App\Http\Controllers\SilverZakatController;
 use App\Http\Controllers\VillageController;
+use App\Models\FitrahZakatPeriodeSession;
+use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -21,9 +28,42 @@ Route::get('bayar-zakat', function () {
     return Inertia::render('pay-zakat');
 })->name('pay-zakat');
 
-Route::get('bayar-zakat-fitrah/{code}', function () {
-    return Inertia::render('pay-zakat-fitrah');
+Route::post('income-zakat', [IncomeZakatController::class, 'store']);
+Route::post('income-zakat/calculate', [IncomeZakatController::class, 'calculate']);
+Route::post('gold-zakat/calculate', [GoldZakatController::class, 'calculate']);
+Route::post('silver-zakat/calculate', [SilverZakatController::class, 'calculate']);
+Route::post('gold-zakat', [GoldZakatController::class, 'store']);
+Route::post('silver-zakat', [SilverZakatController::class, 'store']);
+Route::get('api/villages/search', [VillageController::class, 'search'])->name('villages.search');
+
+Route::get('bayar-zakat-fitrah/{code}', function ($code, Request $request) {
+    $session = FitrahZakatPeriodeSession::where('code', $code)->firstOrFail();
+
+    return Inertia::render('pay-zakat-fitrah', [
+        'session' => [
+            'id'         => $session->id,
+            'title'      => $session->title,
+            'rice_price'  => $session->rice_price,
+        ],
+        'village'  => [
+            'id'   => $request->query('village_id'),
+            'name' => $request->query('village_name'),
+        ],
+    ]);
 })->name('pay-zakat-fitrah');
+Route::get('fitrah-session/by-village/{id}', function ($id) {
+    $today = Carbon::today();
+    $session = FitrahZakatPeriodeSession::where('village_id', $id)
+        ->where('start_date', '<=', $today)
+        ->where('end_date', '>=', $today)
+        ->first();
+
+    return response()->json([
+        'code' => $session?->code,
+        'available' => $session !== null,
+    ]);
+});
+Route::post('fitrah-zakat', [FitrahZakatController::class, 'store']);
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dasbor', function () {

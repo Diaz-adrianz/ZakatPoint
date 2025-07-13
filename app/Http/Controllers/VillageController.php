@@ -8,6 +8,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\DB;
+
 
 class VillageController extends Controller
 {
@@ -51,5 +53,18 @@ public function store(Request $request)
 
     return redirect()->route('villages.index')->with('success', 'Desa berhasil ditambahkan.');
 }
+public function search(Request $request)
+{
+    $query = $request->q;
+
+    $villages = DB::table('villages')
+        ->where('village', 'like', "%{$query}%")
+        ->select('id', 'village as name')
+        ->limit(10)
+        ->get();
+
+    return response()->json($villages);
+}
+
 
 }
