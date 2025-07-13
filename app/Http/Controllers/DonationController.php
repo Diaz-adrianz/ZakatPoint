@@ -2,13 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Donation;
+use App\Models\Donatur;
 use App\Models\Article;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Redirect;
 
-class ArticleController extends Controller
+class DonationController extends Controller
 {
     public function list(Request $request)
     {
@@ -17,7 +19,7 @@ class ArticleController extends Controller
         $limit = min(max(1, (int)$limit), 100);
         $villageId = $request->cookie('village_id');
 
-        $query = Article::query();
+        $query = Donation::query();
 
         if ($villageId) {
             $query->where("village_id", $villageId);
@@ -28,10 +30,17 @@ class ArticleController extends Controller
                   ->orWhere('slug', 'like', '%' . $search . '%');
         }
 
-        $articles = $query->orderBy('created_at', 'desc')->paginate($limit);
+        $query->withSum('donaturs', 'nominal');
 
-        return Inertia::render('article-list', [
-            'articles' => $articles,
+        $donations = $query->orderBy('created_at', 'desc')->paginate($limit);
+
+        $sumAllNominal = Donatur::whereHas('donation', function ($query) use ($villageId) {
+            $query->where('village_id', $villageId);
+        })->sum('nominal');
+
+        return Inertia::render('donation-list', [
+            'donations' => $donations,
+            'sumAllNominal' => $sumAllNominal,
             'query' => [
                 'search' => $search,
             ]

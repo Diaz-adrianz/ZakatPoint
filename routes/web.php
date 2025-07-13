@@ -3,6 +3,7 @@
 use App\Http\Controllers\RegionController;
 use App\Http\Controllers\VillageController;
 use App\Http\Controllers\ArticleController;
+use App\Http\Controllers\DonationController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -99,6 +100,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('daftar-artikel/edit/{id}', [ArticleController::class, 'update'])
          ->middleware('check_village_role:admin|editor')
          ->name('article.update');
+
+    // DONATION / SEDEKAH
+    Route::get('daftar-sedekah', [DonationController::class, 'list'])
+        ->name('donation.list');
 
 });
 

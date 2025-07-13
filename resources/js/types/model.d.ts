@@ -61,3 +61,13 @@ export interface Article {
     village?: Village;
     created_at?: string;
 }
+
+export interface Donation {
+    id: number;
+    title: string;
+    slug: string;
+    description: string;
+    village_id: number;
+    village?: Village;
+    created_at?: string;
+}

@@ -19,8 +19,8 @@ export default function VisitorLayout({ children }: PropsWithChildren<AuthLayout
                         <Button variant={page.url == '/artikel' ? 'secondary' : 'ghost'} asChild>
                             <Link href={route('article.explore')}>Artikel</Link>
                         </Button>
-                        <Button variant={page.url == '/jelajahi-donasi' ? 'secondary' : 'ghost'} asChild>
-                            <Link href={route('explore-donations')}>Donasi</Link>
+                        <Button variant={page.url == '/sedekah' ? 'secondary' : 'ghost'} asChild>
+                            <Link href={route('explore-donations')}>Sedekah</Link>
                         </Button>
                         {auth.user ? (
                             <Button variant={'outline'} asChild>

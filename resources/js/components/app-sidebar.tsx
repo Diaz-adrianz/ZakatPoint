@@ -32,8 +32,8 @@ const financeNavItems: NavItem[] = [
         icon: HandCoinsIcon,
     },
     {
-        title: 'Donasi',
-        href: '/donasi',
+        title: 'Sedekah',
+        href: '/daftar-sedekah',
         icon: HeartHandshakeIcon,
     },
 ];
