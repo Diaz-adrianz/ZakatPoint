@@ -86,12 +86,12 @@ export default function ArticleList({ query, articles }: { query?: { search?: st
                                 <TableCell>
                                     <div className="flex items-center gap-3">
                                         <Button variant={'outline'} size={'icon'} asChild>
-                                            <Link href={`/artikel/${dat.slug}`} target='_blank' prefetch>
+                                            <Link href={route('article.view', {slug: dat.slug})} target='_blank'>
                                                 <EyeIcon />
                                             </Link>
                                         </Button>
                                         <Button variant={'outline'} size={'icon'} asChild>
-                                            <Link href={`/daftar-artikel/edit/${dat.id}`} target='_blank' prefetch>
+                                            <Link href={route('article.edit', {id: dat.id})}>
                                                 <Edit2Icon />
                                             </Link>
                                         </Button>

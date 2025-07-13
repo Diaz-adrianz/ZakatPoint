@@ -76,6 +76,16 @@ class ArticleController extends Controller
         ]);
     }
 
+    public function view($slug)
+    {
+        $article = Article::where('slug', $slug)
+                          ->with("village")
+                          ->firstOrFail();
+        return Inertia::render('article-view', [
+            'article' => $article,
+        ]); 
+    }
+
     public function store(Request $request)
     {
         $villageId = $request->cookie('village_id');

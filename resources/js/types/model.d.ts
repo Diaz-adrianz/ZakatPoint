@@ -59,4 +59,5 @@ export interface Article {
     content: string
     village_id: number
     village?: Village
+    created_at?: string
 }

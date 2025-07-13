@@ -13,6 +13,9 @@ Route::get('/', function () {
 Route::get('artikel', [ArticleController::class, 'explore'])
      ->name('article.explore');
 
+Route::get('artikel/{slug}', [ArticleController::class, 'view'])
+     ->name('article.view');
+
 Route::get('jelajahi-donasi', function () {
     return Inertia::render('explore-donations');
 })->name('explore-donations');
