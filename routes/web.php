@@ -3,6 +3,7 @@
 use App\Http\Controllers\RegionController;
 use App\Http\Controllers\VillageController;
 use App\Http\Controllers\ArticleController;
+use App\Http\Controllers\DonationController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -16,9 +17,12 @@ Route::get('artikel', [ArticleController::class, 'explore'])
 Route::get('artikel/{slug}', [ArticleController::class, 'view'])
      ->name('article.view');
 
-Route::get('jelajahi-donasi', function () {
-    return Inertia::render('explore-donations');
-})->name('explore-donations');
+Route::get('sedekah', [DonationController::class, 'explore'])
+     ->name('donation.explore');
+
+Route::get('sedekah/{slug}', [DonationController::class, 'view'])
+     ->name('donation.view');
+
 
 Route::get('bayar-zakat', function () {
     return Inertia::render('pay-zakat');
@@ -47,9 +51,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('zakat-fitrah', function () {
         return Inertia::render('zakat-fitrah');
     })->name('zakat-fitrah');
-    Route::get('donasi', function () {
-        return Inertia::render('donations');
-    })->name('donations');
     
     // VILLAGE / DESA 
     Route::get('penduduk', [VillageController::class, 'getVillageUsers'])->name('resident');
@@ -74,12 +75,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('zakat-fitrah/edit-periode', function () {
         return Inertia::render('edit-zakat-fitrah-periode');
     })->name('edit-zakat-fitrah-periode');
-    Route::get('donasi/tambah', function () {
-        return Inertia::render('add-donation');
-    })->name('add-donation');
-    Route::get('donasi/edit', function () {
-        return Inertia::render('edit-donation');
-    })->name('edit-donation');
 
     // ARTICLE / ARTIKEL BELAJAR 
     Route::get('daftar-artikel', [ArticleController::class, 'list'])
@@ -100,6 +95,24 @@ Route::middleware(['auth', 'verified'])->group(function () {
          ->middleware('check_village_role:admin|editor')
          ->name('article.update');
 
+    // DONATION / SEDEKAH
+    Route::get('daftar-sedekah', [DonationController::class, 'list'])
+        ->name('donation.list');
+    Route::delete('daftar-sedekah/{id}', [DonationController::class, 'destroy'])
+        ->middleware('check_village_role:admin|editor')
+        ->name('donation.destroy');
+    Route::get('daftar-sedekah/tambah', [DonationController::class, 'add'])
+        ->middleware('check_village_role:admin|editor')
+        ->name('donation.add');
+    Route::post('daftar-sedekah/tambah', [DonationController::class, 'store'])
+        ->middleware('check_village_role:admin|editor')
+        ->name('donation.store');
+    Route::get('daftar-sedekah/edit/{id}', [DonationController::class, 'edit'])
+         ->middleware('check_village_role:admin|editor')
+         ->name('donation.edit');
+    Route::post('daftar-sedekah/edit/{id}', [DonationController::class, 'update'])
+         ->middleware('check_village_role:admin|editor')
+         ->name('donation.update');
 });
 
 require __DIR__.'/settings.php';

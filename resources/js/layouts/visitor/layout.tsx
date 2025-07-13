@@ -14,13 +14,15 @@ export default function VisitorLayout({ children }: PropsWithChildren<AuthLayout
         <>
             <div className="sticky-top top-0 border-b">
                 <Container className="flex flex-wrap items-center gap-3 py-3">
-                    <h1 className="grow text-2xl font-bold">ZakatPoint</h1>
+                    <Link href={route('home')} className="grow">
+                        <h1 className="text-2xl font-bold">ZakatPoint</h1>
+                    </Link>
                     <div className="flex items-center gap-3 overflow-x-auto">
                         <Button variant={page.url == '/artikel' ? 'secondary' : 'ghost'} asChild>
                             <Link href={route('article.explore')}>Artikel</Link>
                         </Button>
-                        <Button variant={page.url == '/jelajahi-donasi' ? 'secondary' : 'ghost'} asChild>
-                            <Link href={route('explore-donations')}>Donasi</Link>
+                        <Button variant={page.url == '/sedekah' ? 'secondary' : 'ghost'} asChild>
+                            <Link href={route('donation.explore')}>Sedekah</Link>
                         </Button>
                         {auth.user ? (
                             <Button variant={'outline'} asChild>

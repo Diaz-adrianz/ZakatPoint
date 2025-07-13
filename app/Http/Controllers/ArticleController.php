@@ -15,8 +15,13 @@ class ArticleController extends Controller
         $search = $request->query('search');
         $limit = $request->query('limit', 20);
         $limit = min(max(1, (int)$limit), 100);
+        $villageId = $request->cookie('village_id');
 
         $query = Article::query();
+
+        if ($villageId) {
+            $query->where("village_id", $villageId);
+        }
 
         if ($search) {
             $query->where('title', 'like', '%' . $search . '%')
