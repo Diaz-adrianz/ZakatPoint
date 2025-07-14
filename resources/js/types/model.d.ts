@@ -146,3 +146,17 @@ export interface GoldZakat {
     village?: Village
     payment?: Payment
 }
+
+export interface SilverZakat {
+    id: number
+    weight:number
+    amount: number
+    email: string
+    name: string
+    no_hp: string
+    gender: string
+    village_id: string
+    payment_id: string
+    village?: Village
+    payment?: Payment
+}

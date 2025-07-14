@@ -138,6 +138,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('zakat-emas', [GoldZakatController::class, 'list'])
         ->name('zakat-gold-list');
 
+    // ZAKAT SILVER / PERAK
+    Route::get('zakat-perak', [SilverZakatController::class, 'list'])
+        ->name('zakat-silver-list');
 
     Route::get('zakat-fitrah', function () {
         return Inertia::render('zakat-fitrah');
