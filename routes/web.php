@@ -4,6 +4,7 @@ use App\Http\Controllers\RegionController;
 use App\Http\Controllers\VillageController;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\DonationController;
+use App\Http\Controllers\PaymentController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -17,12 +18,19 @@ Route::get('artikel', [ArticleController::class, 'explore'])
 Route::get('artikel/{slug}', [ArticleController::class, 'view'])
      ->name('article.view');
 
+// DONATION / SEDEKAH 
 Route::get('sedekah', [DonationController::class, 'explore'])
      ->name('donation.explore');
 
 Route::get('sedekah/{slug}', [DonationController::class, 'view'])
      ->name('donation.view');
 
+Route::post('sedekah/{slug}/kirim', [DonationController::class, 'donate'])
+     ->name('donation.donate');
+
+// PAYMENT
+Route::get('pembayaran/{id}', [PaymentController::class, 'view'])
+     ->name('payment.view');
 
 Route::get('bayar-zakat', function () {
     return Inertia::render('pay-zakat');
