@@ -25,4 +25,19 @@ class Payment extends Model
     {
         return $this->hasMany(PaymentItem::class);
     }
+    public function goldZakat() {
+    return $this->hasOne(GoldZakat::class);
+    }
+
+    public function incomeZakat() {
+        return $this->hasOne(IncomeZakat::class);
+    }
+
+    public function silverZakat() {
+        return $this->hasOne(SilverZakat::class);
+    }
+
+    public function fitrahZakat() {
+        return $this->hasOne(FitrahZakat::class);
+    }
 }

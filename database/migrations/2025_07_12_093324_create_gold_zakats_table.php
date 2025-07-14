@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('gold_zakats', function (Blueprint $table) {
             $table->id();
-            $table->decimal('price', 18, 2); // harga emas / gram saat transaksi
+            $table->decimal('weight', 18, 2);
             $table->decimal('amount', 18, 2);
             $table->string('email');
             $table->string('name');

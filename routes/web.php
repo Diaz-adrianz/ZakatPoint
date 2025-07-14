@@ -1,7 +1,18 @@
 <?php
 
+use App\Helpers\MetalPriceHelper;
+use App\Http\Controllers\FitrahZakatController;
+use App\Http\Controllers\GoldZakatController;
+use App\Http\Controllers\IncomeZakatController;
+use App\Http\Controllers\InstructionController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\RegionController;
+use App\Http\Controllers\SilverZakatController;
 use App\Http\Controllers\VillageController;
+use App\Models\FitrahZakatPeriodeSession;
+use App\Models\Payment;
+use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\DonationController;
 use App\Http\Controllers\PaymentController;
@@ -36,9 +47,74 @@ Route::get('bayar-zakat', function () {
     return Inertia::render('pay-zakat');
 })->name('pay-zakat');
 
-Route::get('bayar-zakat-fitrah/{code}', function () {
-    return Inertia::render('pay-zakat-fitrah');
+Route::post('income-zakat', [IncomeZakatController::class, 'store']);
+Route::post('income-zakat/calculate', [IncomeZakatController::class, 'calculate']);
+Route::post('gold-zakat/calculate', [GoldZakatController::class, 'calculate']);
+Route::post('silver-zakat/calculate', [SilverZakatController::class, 'calculate']);
+Route::post('gold-zakat', [GoldZakatController::class, 'store']);
+Route::get('/income-zakat/nisab', function () {
+    $goldPrice = MetalPriceHelper::getGoldToday();
+    $nisabBulanan = (85 * $goldPrice) / 12;   // 85 gr ÷ 12 bulan
+
+    return response()->json([
+        'gold_price' => round($goldPrice),
+        'nisab_value'=> round($nisabBulanan),
+    ]);
+});
+Route::get('/gold-price', function () {
+    $pricePerGram = MetalPriceHelper::getGoldToday();
+    $nisab        = 85 * $pricePerGram;
+
+    return response()->json([
+        'price_per_gram' => $pricePerGram,
+        'nisab_value'=> round($nisab),
+    ]);
+});
+Route::get('/silver-price', function () {
+    $pricePerGram = MetalPriceHelper::getSilverToday();
+    $nisab        = 595 * $pricePerGram;
+
+    return response()->json([
+        'price_per_gram' => $pricePerGram,
+        'nisab_value'=> round($nisab),
+    ]);
+});
+Route::post('silver-zakat', [SilverZakatController::class, 'store']);
+Route::get('api/villages/search', [VillageController::class, 'search'])->name('villages.search');
+
+Route::get('bayar-zakat-fitrah/{code}', function ($code, Request $request) {
+    $session = FitrahZakatPeriodeSession::where('code', $code)->firstOrFail();
+
+    return Inertia::render('pay-zakat-fitrah', [
+        'session' => [
+            'id'         => $session->id,
+            'title'      => $session->title,
+            'rice_price'  => $session->rice_price,
+        ],
+        'village'  => [
+            'id'   => $request->query('village_id'),
+            'name' => $request->query('village_name'),
+        ],
+    ]);
 })->name('pay-zakat-fitrah');
+Route::get('fitrah-session/by-village/{id}', function ($id) {
+    $today = Carbon::today();
+    $session = FitrahZakatPeriodeSession::where('village_id', $id)
+        ->where('start_date', '<=', $today)
+        ->where('end_date', '>=', $today)
+        ->first();
+
+    return response()->json([
+        'code' => $session?->code,
+        'available' => $session !== null,
+    ]);
+});
+Route::post('fitrah-zakat', [FitrahZakatController::class, 'store']);
+Route::post('/payments', [PaymentController::class, 'store']);
+Route::get('/instruksi/{reference}', function ($reference) {
+    $payment = Payment::where('reference_id', $reference)->firstOrFail();
+    return app(InstructionController::class)->show($payment);
+});
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dasbor', function () {

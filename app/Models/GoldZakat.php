@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class GoldZakat extends Model
 {
     protected $fillable = [
-        'price', 'amount',
+        'weight', 'amount',
         'email', 'name', 'no_hp', 'gender',
         'village_id', 'payment_id',
     ];

@@ -34,5 +34,7 @@ return [
             'channel' => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
         ],
     ],
-
+    'metalprice' => [
+        'key' => env('METALPRICE_API_KEY'),
+    ],
 ];
