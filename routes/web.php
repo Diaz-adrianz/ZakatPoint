@@ -5,7 +5,6 @@ use App\Http\Controllers\FitrahZakatController;
 use App\Http\Controllers\GoldZakatController;
 use App\Http\Controllers\IncomeZakatController;
 use App\Http\Controllers\InstructionController;
-use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\RegionController;
 use App\Http\Controllers\SilverZakatController;
 use App\Http\Controllers\VillageController;
