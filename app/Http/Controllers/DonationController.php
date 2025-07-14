@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Donation;
 use App\Models\Donatur;
+use App\Http\Controllers\PaymentController;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Redirect;
 
@@ -93,9 +95,20 @@ class DonationController extends Controller
     public function view($slug)
     {
         $donation = Donation::where('slug', $slug)
-                          ->with("village")
-                          ->withSum('donaturs', 'nominal')
-                          ->firstOrFail();
+                            ->with("village")
+                            ->with(['donaturs' => function ($query) {
+                                $query->whereHas('payment', function ($query) {
+                                    $query->where('status', 'SUCCESS');
+                                });
+                                $query->orderBy('created_at', 'desc'); 
+                            }])
+                            ->withSum(['donaturs' => function ($query) {
+                                $query->whereHas('payment', function ($query) {
+                                    $query->where('status', 'SUCCESS');
+                                });
+                            }], 'nominal')
+                            ->firstOrFail();
+        
         return Inertia::render('donation-view', [
             'donation' => $donation,
         ]); 
@@ -176,6 +189,56 @@ class DonationController extends Controller
             return redirect()->route('donation.list')->with('success', 'Program sedekah "' . $donation->title . '" berhasil dihapus.');
         } catch (\Exception $e) {
             return Redirect::back()->with('error', 'Terjadi kesalahan saat menghapus program sedekah. Silakan coba lagi.');
+        }
+    }
+
+    public function donate(Request $request, $slug)
+    {
+        $data = $request->validate([
+            'email' => 'required|string|email|max:255', 
+            'name' => 'nullable|string|max:255', 
+            'no_hp' => 'required|string|regex:/^[0-9]{10,15}$/', 
+            'gender' => 'required|string', 
+            'nominal' => 'nullable|numeric|min:0',
+        ]);
+
+        try {
+            $donation = Donation::where('slug', $slug)
+                                ->firstOrFail();
+
+            $paymentController = new PaymentController();            
+            $payment = $paymentController->store([
+                'amount' => $data['nominal'],
+                'first_name' => $data['name'],
+                'email' => $data['email'],
+                'phone' => $data['no_hp'],
+            ], array(
+                [
+                    'item_id' => uniqid(),
+                    'name' => 'Sedekah program ' . $donation->title,
+                    'price' => $data['nominal'],
+                    'quantity' => 1,
+                    'category' => 'sedekah'
+                ],
+            ), 1);
+
+            if ($payment == null) {
+                throw new \Exception('Payment failed');
+            }
+
+            Donatur::create([
+                'username' => $data['name'],
+                'nominal' => $data['nominal'],
+                'donation_id' => $donation->id,
+                'payment_id' => $payment['id'],
+            ]);
+
+            return to_route('payment.view', ['id' => $payment['id']]);
+        } catch (\Exception $e) {
+            Log::error('Payment error: ' . $e->getMessage(), [
+                'exception' => $e
+            ]);
+            return Redirect()->back()->with('error', "Terjadi kesalahan saat membuat pembayaran sedekah. Silakan coba lagi.");
         }
     }
 }

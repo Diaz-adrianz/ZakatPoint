@@ -14,7 +14,7 @@ import { useState } from 'react';
 export default function ExploreVillages({ villages, query }: { query: { search?: string }; villages: PaginatedResponse<Village> }) {
     const { flash } = usePage<SharedData>().props;
 
-    const { data, setData, get, post } = useForm<{ search?: string }>({
+    const { data, setData, get } = useForm<{ search?: string }>({
         search: query.search ?? '',
     });
 

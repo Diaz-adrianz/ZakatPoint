@@ -72,4 +72,49 @@ export interface Donation {
     village?: Village;
     created_at?: string;
     donaturs_sum_nominal?: number;
+    donaturs?: Donatur[]
 }
+
+export interface Donatur {
+    id: number
+    username: string
+    nominal: number
+    created_at: string
+}
+
+/**
+ * Interface untuk model PaymentItem.
+ */
+export interface PaymentItem {
+    id: number; 
+    payment_id: number; 
+    item_id: string;
+    price: number;
+    quantity: number;
+    name: string;
+    brand?: string | null; 
+    category?: string | null;
+    merchant_name?: string | null;
+    url?: string | null;
+    created_at?: string; 
+    updated_at?: string; 
+}
+  
+export interface Payment {
+    id: number; 
+    order_id: string;
+    amount: number;
+    status: 'PENDING' | 'SUCCESS' | 'FAILURE';
+    payment_type?: string | null;
+    snap_token?: string | null;
+    first_name: string;
+    last_name?: string | null;
+    email: string;
+    phone: string;
+    expired_at?: string | null;
+    status_update_at?: string;
+    created_at?: string; 
+    updated_at?: string; 
+    items?: PaymentItem[];
+}
+  
