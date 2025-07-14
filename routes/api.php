@@ -12,6 +12,10 @@ Route::prefix('api')->group(function () {
     Route::get('/regencies/{provinceId}', [RegionController::class, 'getRegencies']);
     Route::get('/districts/{regencyId}', [RegionController::class, 'getDistricts']);
     Route::get('/villages/{districtId}', [RegionController::class, 'getVillages']);        
+
+    // ARTICLE
+    Route::get('/article-listraw', [ArticleController::class, 'listRaw'])
+         ->name("article.listraw");
     Route::post('/chatbot-article', [ArticleController::class, 'chat'])
          ->name("article.chat");
 

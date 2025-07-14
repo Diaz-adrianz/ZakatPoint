@@ -10,6 +10,12 @@ use Illuminate\Support\Facades\Redirect;
 
 class ArticleController extends Controller
 {
+    public function listRaw()
+    {
+        $articles = Article::all();
+        return response()->json($articles);
+    }
+
     public function list(Request $request)
     {
         $search = $request->query('search');
@@ -149,14 +155,6 @@ class ArticleController extends Controller
             return redirect()->route('article.list')->with('success', 'Artikel "' . $article->title . '" berhasil diperbarui.');
 
         } catch (\Exception $e) {
-            // Log the error for debugging
-            \Log::error('Error updating article: ' . $e->getMessage(), [
-                'user_id' => Auth::id(),
-                'article_id' => $id,
-                'village_id' => $villageIdFromCookie,
-                'exception' => $e
-            ]);
-
             // Redirect back with an error message
             return Redirect::back()->with('error', 'Terjadi kesalahan saat memperbarui artikel. Silakan coba lagi.');
         }
