@@ -10,17 +10,37 @@ export default function ZakatFitrahPeriodeView({periode}: {periode: FitrahZakatP
     return (
         <Container>
             <Head title="Zakat fitrah" />
-            <h1 className="typo-h1 mb-3">{periode.title}</h1>
-
-            <div className="flex w-fit mb-3 flex-col">
-                <small className="!typo-small text-muted-foreground">Dibuka oleh</small>
-                <h4 className="typo-h4">{periode.village?.village}</h4>
-                <p className="typo-p text-muted-foreground lowercase">
-                    {periode.village?.district} • {periode.village?.city} • {periode.village?.province}
+            <div className="mb-6">
+                <h1 className="typo-h1">{periode.title}</h1>
+                <p className="typo-p text-muted-foreground">
+                    {moment(periode.start_date).format('DD MMM YYYY')} s/d {moment(periode.end_date).format('DD MMM YYYY')}
                 </p>
-                <Separator className="my-3" />
-                <p className="typo-p text-muted-foreground">{moment(periode.created_at).fromNow()}</p>
             </div>
+
+            <div className="flex justify-between items-center flex-wrap gap-">
+                <div className="flex w-fit mb-3 flex-col">
+                    <small className="!typo-small text-muted-foreground">Dibuka oleh</small>
+                    <h4 className="typo-h4">{periode.village?.village}</h4>
+                    <p className="typo-p text-muted-foreground lowercase">
+                        {periode.village?.district} • {periode.village?.city} • {periode.village?.province}
+                    </p>
+                </div>
+                <div>
+                    <h4 className="typo-h4">{formatMoney(periode.zakats_sum_amount)}</h4>
+                    <p className="typo-p text-muted-foreground lowercase">
+                        Terkumpul
+                    </p>
+                </div>
+                <div>
+                    <h4 className="typo-h4">{formatMoney(periode.rice_price)}</h4>
+                    <p className="typo-p text-muted-foreground lowercase">
+                        Harga beras per 1 sha' di desa
+                    </p>
+                </div>
+            </div>
+
+            <Separator className="my-3" />
+            <p className="typo-p mb-3 text-muted-foreground">{moment(periode.created_at).fromNow()}</p>
 
             <Card>
                 <CardHeader>
