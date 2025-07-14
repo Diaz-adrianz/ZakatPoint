@@ -3,8 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\MetalPriceHelper;
+use App\Mail\InstructionMail;
 use App\Models\IncomeZakat;
+use App\Models\Payment;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class IncomeZakatController extends Controller
 {
@@ -28,7 +31,6 @@ class IncomeZakatController extends Controller
 
         return response()->json([
             'gold_price'  => round($goldPrice, 0),
-            'nisab_value' => round($nisabBulanan, 0),
             'is_nisab'    => $isNisab,
             'amount'      => round($amount, 0),
             'message'     => $isNisab
@@ -51,6 +53,7 @@ class IncomeZakatController extends Controller
             'no_hp'        => 'required|string|max:30',
             'gender'       => 'required|in:bapak,ibu',
             'village_id'   => 'required|exists:villages,id',
+            'payment_id'   => 'required|exists:payments,id',
         ]);
 
         // --- hitung lagi untuk keamanan ---
@@ -78,8 +81,14 @@ class IncomeZakatController extends Controller
             'no_hp'        => $validated['no_hp'],
             'gender'       => $validated['gender'],
             'village_id'   => $validated['village_id'],
-            'payment_id'   => 1, // TODO: ganti ketika payment gateway siap
+            'payment_id'   => $request->payment_id,
         ]);
+
+        $payment = Payment::findOrFail($request['payment_id']);
+
+        if ($request->filled('email')) {
+            Mail::to($request['email'])->send(new InstructionMail($payment));
+        }
 
         return response()->json([
             'success'      => true,

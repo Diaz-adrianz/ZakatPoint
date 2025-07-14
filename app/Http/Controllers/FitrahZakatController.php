@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\InstructionMail;
 use App\Models\FitrahZakat;
+use App\Models\Payment;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class FitrahZakatController extends Controller
 {
@@ -30,6 +33,12 @@ class FitrahZakatController extends Controller
             'fitrah_session_id' => $request->fitrah_session_id,
             'payment_id'        => $request->payment_id,
         ]);
+
+        $payment = Payment::findOrFail($request['payment_id']);
+
+        if ($request->filled('email')) {
+            Mail::to($request['email'])->send(new InstructionMail($payment));
+        }
 
         return response()->json([
             'success'  => true,

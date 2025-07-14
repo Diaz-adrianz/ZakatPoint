@@ -19,7 +19,14 @@ class Village extends Model
     {
         return $this->hasMany(IncomeZakat::class);
     }
-
+    public function goldZakats()
+    {
+        return $this->hasMany(GoldZakat::class);
+    }
+    public function silverZakats()
+    {
+        return $this->hasMany(SilverZakat::class);
+    }
     public function fitrahZakatPeriodeSessions()
     {
         return $this->hasMany(FitrahZakatPeriodeSession::class);

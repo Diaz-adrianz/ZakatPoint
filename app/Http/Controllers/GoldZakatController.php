@@ -3,31 +3,29 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\MetalPriceHelper;
+use App\Mail\InstructionMail;
 use App\Models\GoldZakat;
+use App\Models\Payment;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class GoldZakatController extends Controller
 {
     public function calculate(Request $request)
 {
     $request->validate([
-        'price' => 'required|numeric|min:0',   // harga total emas dlm Rupiah
+        'weight' => 'required|numeric|min:0',
     ]);
 
-    $goldPrice = MetalPriceHelper::getGoldToday(); // hasilnya float
-    if ($goldPrice <= 0) {
-        return response()->json(['error' => 'Harga emas tidak valid'], 500);
-    }
-
-    $nisab       = 85 * $goldPrice;      // 85 gram × harga per gram
-    $inputPrice  = $request->price;
-    $isNisab     = $inputPrice >= $nisab;
-    $amount      = $isNisab ? $inputPrice * 0.025 : 0;
+    $pricePerGram = MetalPriceHelper::getGoldToday();
+    $totalValue = $request->weight * $pricePerGram;
+    $nisab       = 85 * $pricePerGram;
+    $isNisab     = $totalValue >= $nisab;
+    $amount      = $totalValue * 0.025;
 
     return response()->json([
         'amount'      => round($amount),
         'is_nisab'    => $isNisab,
-        'nisab_value' => round($nisab),
         'message'     => $isNisab
                          ? 'Anda wajib membayar zakat.'
                          : 'Belum wajib membayar zakat karena belum mencapai nisab.',
@@ -36,30 +34,29 @@ class GoldZakatController extends Controller
 
 
      public function store(Request $request)
-{
-    $request->validate([
-        'name' => 'required|string',
-        'email' => 'nullable|email',
-        'no_hp' => 'nullable|string',
-        'gender' => 'required|in:bapak,ibu',
-        'price' => 'required|numeric|min:0',
-        'amount' => 'required|numeric|min:0',
-        'village_id' => 'required|exists:villages,id',
-        'payment_id' => 'required|exists:payments,id',
-    ]);
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'nullable|email',
+            'no_hp' => 'nullable|string|max:255',
+            'gender' => 'required|in:bapak,ibu',
+            'weight' => 'required|numeric|min:0',
+            'amount' => 'required|numeric|min:0',
+            'village_id' => 'required|exists:villages,id',
+            'payment_id' => 'required|exists:payments,id',
+        ]);
 
-    $zakat = GoldZakat::create([
-        'name' => $request->name,
-        'email' => $request->email,
-        'no_hp' => $request->no_hp,
-        'gender' => $request->gender,
-        'price' => $request->price,
-        'amount' => $request->amount,
-        'village_id' => $request->village_id,
-        'payment_id' => $request->payment_id,
-    ]);
+        $zakat = GoldZakat::create($request->all());
 
-    return response()->json(['success' => true, 'zakat_id' => $zakat->id]);
-}
+        $payment = Payment::findOrFail($request['payment_id']);
 
+        if ($request->filled('email')) {
+            Mail::to($request['email'])->send(new InstructionMail($payment));
+        }
+
+        return response()->json([
+            'success' => true,
+            'zakat_id' => $zakat->id,
+        ]);
+    }
 }

@@ -3,27 +3,29 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\MetalPriceHelper;
+use App\Mail\InstructionMail;
+use App\Models\Payment;
 use App\Models\SilverZakat;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class SilverZakatController extends Controller
 {
     public function calculate(Request $request)
 {
     $request->validate([
-        'price' => 'required|numeric|min:0',
+        'weight' => 'required|numeric|min:0',
     ]);
 
     $pricePerGram = MetalPriceHelper::getSilverToday();
+    $totalValue = $request->weight * $pricePerGram;
     $nisab = 595 * $pricePerGram;
-    $inputPrice = $request->price;
-    $isNisab = $inputPrice >= $nisab;
-    $amount = $isNisab ? $inputPrice * 0.025 : 0;
+    $isNisab = $totalValue >= $nisab;
+    $amount = $isNisab ? $totalValue * 0.025 : 0;
 
     return response()->json([
         'amount'       => round($amount),
         'is_nisab'     => $isNisab,
-        'nisab_value'  => round($nisab),
         'message'      => $isNisab ? 'Anda wajib membayar zakat.' : 'Belum wajib membayar zakat karena belum mencapai nisab.',
     ]);
 }
@@ -31,7 +33,7 @@ class SilverZakatController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'price' => 'required|numeric|min:0',
+            'weight' => 'required|numeric|min:0',
             'amount' => 'required|numeric|min:0',
             'village_id' => 'required|exists:villages,id',
             'payment_id' => 'required|exists:payments,id',
@@ -42,6 +44,12 @@ class SilverZakatController extends Controller
         ]);
 
         $zakat = SilverZakat::create($request->all());
+
+        $payment = Payment::findOrFail($request['payment_id']);
+
+        if ($request->filled('email')) {
+            Mail::to($request['email'])->send(new InstructionMail($payment));
+        }
 
         return response()->json([
             'success' => true,
