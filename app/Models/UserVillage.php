@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class UserVillage extends Model
 {
-    protected $fillable = ['user_id', 'village_id', 'role'];
+    protected $fillable = ['user_id', 'village_id', 'role', 'is_pending'];
 
     public function user()
     {

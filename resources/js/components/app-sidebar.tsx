@@ -1,8 +1,8 @@
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
-import { type NavItem } from '@/types';
-import { Link } from '@inertiajs/react';
+import { SharedData, type NavItem } from '@/types';
+import { Link, usePage } from '@inertiajs/react';
 import { BookOpenIcon, BriefcaseBusinessIcon, CoinsIcon, HandCoinsIcon, HeartHandshakeIcon, LayoutGrid, StoreIcon, UsersIcon } from 'lucide-react';
 import AppLogo from './app-logo';
 import SelectVillage from './select-village';
@@ -12,10 +12,6 @@ const mainNavItems: NavItem[] = [
         title: 'Dasbor',
         href: '/dasbor',
         icon: LayoutGrid,
-    },
-    {
-        title: 'daftar desa',
-        href: '/daftar-desa',
     },
 ];
 
@@ -36,16 +32,16 @@ const financeNavItems: NavItem[] = [
         icon: HandCoinsIcon,
     },
     {
-        title: 'Donasi',
-        href: '/donasi',
+        title: 'Sedekah',
+        href: '/daftar-sedekah',
         icon: HeartHandshakeIcon,
     },
 ];
 
 const adminNavItems: NavItem[] = [
     {
-        title: 'Materi belajar',
-        href: '/materi-belajar',
+        title: 'Artikel',
+        href: '/daftar-artikel',
         icon: BookOpenIcon,
     },
     {
@@ -61,8 +57,10 @@ const adminNavItems: NavItem[] = [
 ];
 
 export function AppSidebar() {
+    const { villageId } = usePage<SharedData>().props;
+
     return (
-        <Sidebar collapsible="icon" variant="inset">
+        <Sidebar collapsible="offcanvas" variant="inset">
             <SidebarHeader>
                 <SidebarMenu>
                     <SidebarMenuItem>
@@ -78,8 +76,12 @@ export function AppSidebar() {
             <SidebarContent className="gap-6">
                 <SelectVillage />
                 <NavMain items={mainNavItems} />
-                <NavMain label="Keuangan" items={financeNavItems} />
-                <NavMain label="Admin" items={adminNavItems} />
+                {!!villageId && (
+                    <>
+                        <NavMain label="Keuangan" items={financeNavItems} />
+                        <NavMain label="Admin" items={adminNavItems} />
+                    </>
+                )}
             </SidebarContent>
 
             <SidebarFooter>

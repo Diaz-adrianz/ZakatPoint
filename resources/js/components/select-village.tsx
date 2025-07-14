@@ -1,8 +1,9 @@
 import { cn } from '@/lib/utils';
 import { SharedData } from '@/types';
+import { UserVillage } from '@/types/model';
 import { Link, usePage } from '@inertiajs/react';
 import { ChevronDownIcon, PlusIcon, SearchIcon } from 'lucide-react';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Button } from './ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 
@@ -20,32 +21,40 @@ const SelectVillage = () => {
         window.location.reload();
     }, []);
 
+    const [villages, setVillages] = useState<UserVillage[]>([]);
+    const getVillages = () => {
+        fetch('/api/user-villages')
+            .then((res) => res.json())
+            .then((data) => {
+                setVillages(data);
+                if (!data.length) setExpand(true);
+            });
+    };
+
+    useEffect(() => {
+        getVillages();
+    }, []);
+
     return (
-        <div className="relative flex flex-col items-stretch gap-3 rounded-md border p-3 pb-8">
-            <div>
-                <Select defaultValue={villageId} onValueChange={setCookie}>
-                    <SelectTrigger className="">
-                        <SelectValue placeholder="Pilih desa" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="Cipadung">
-                            <p className="typo-p">
-                                Cipadung <span className="typo-small text-muted-foreground">⎯ Admin</span>
-                            </p>
-                        </SelectItem>
-                        <SelectItem value="Binong">
-                            <p className="typo-p">
-                                Binong <span className="typo-small text-muted-foreground">⎯ Warga</span>
-                            </p>
-                        </SelectItem>
-                        <SelectItem value="Manisi">
-                            <p className="typo-p">
-                                Manisi <span className="typo-small text-muted-foreground">⎯ Editor</span>
-                            </p>
-                        </SelectItem>
-                    </SelectContent>
-                </Select>
-            </div>
+        <div className="relative flex flex-col items-stretch gap-3 rounded-md border bg-background p-3 pb-8 text-foreground">
+            {villages.length ? (
+                <div>
+                    <Select defaultValue={villageId} onValueChange={setCookie}>
+                        <SelectTrigger className="">
+                            <SelectValue placeholder="Pilih desa" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {villages.map((v, i) => (
+                                <SelectItem key={i} value={v.village_id.toString()}>
+                                    <p className="typo-p">
+                                        {v.village?.village} <span className="typo-small text-muted-foreground">⎯ {v.role}</span>
+                                    </p>
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </div>
+            ) : null}
 
             {expand && (
                 <>

@@ -113,7 +113,7 @@
     --radius: 0.625rem;
     --sidebar: oklch(0.985 0 0);
     --sidebar-foreground: oklch(0.145 0 0);
-    --sidebar-primary: oklch(0.205 0 0);
+    --sidebar-primary: oklch(56.6% 0.193 142);
     --sidebar-primary-foreground: oklch(0.985 0 0);
     --sidebar-accent: oklch(0.97 0 0);
     --sidebar-accent-foreground: oklch(0.205 0 0);
@@ -184,7 +184,7 @@
     }
 
     .typo-p {
-        @apply leading-7;
+        @apply text-base leading-7;
     }
 
     .typo-quote {
@@ -209,5 +209,34 @@
 
     .typo-muted {
         @apply text-sm text-muted-foreground;
+    }
+
+    .no-scrollbar {
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+
+    .no-scrollbar::-webkit-scrollbar {
+        @apply hidden;
+    }
+
+    .scrollbar-custom::-webkit-scrollbar {
+        @apply h-3 w-3;
+    }
+
+    .scrollbar-custom::-webkit-scrollbar-thumb {
+        @apply rounded-full bg-neutral-400;
+    }
+
+    .scrollbar-custom::-webkit-scrollbar-track {
+        @apply bg-neutral-200;
+    }
+
+    .ql-toolbar {
+        @apply rounded-t-sm !border-input bg-secondary shadow-none;
+    }
+
+    .ql-container {
+        @apply min-h-64 rounded-b-sm !border-input shadow-none;
     }
 }

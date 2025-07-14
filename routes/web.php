@@ -13,6 +13,9 @@ use App\Models\FitrahZakatPeriodeSession;
 use App\Models\Payment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use App\Http\Controllers\ArticleController;
+use App\Http\Controllers\DonationController;
+use App\Http\Controllers\PaymentController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -20,13 +23,25 @@ Route::get('/', function () {
     return Inertia::render('home');
 })->name('home');
 
-Route::get('jelajahi-materi-belajar', function () {
-    return Inertia::render('explore-learning-materials');
-})->name('explore-learning-materials');
+Route::get('artikel', [ArticleController::class, 'explore'])
+     ->name('article.explore');
 
-Route::get('jelajahi-donasi', function () {
-    return Inertia::render('explore-donations');
-})->name('explore-donations');
+Route::get('artikel/{slug}', [ArticleController::class, 'view'])
+     ->name('article.view');
+
+// DONATION / SEDEKAH 
+Route::get('sedekah', [DonationController::class, 'explore'])
+     ->name('donation.explore');
+
+Route::get('sedekah/{slug}', [DonationController::class, 'view'])
+     ->name('donation.view');
+
+Route::post('sedekah/{slug}/kirim', [DonationController::class, 'donate'])
+     ->name('donation.donate');
+
+// PAYMENT
+Route::get('pembayaran/{id}', [PaymentController::class, 'view'])
+     ->name('payment.view');
 
 Route::get('bayar-zakat', function () {
     return Inertia::render('pay-zakat');
@@ -120,49 +135,70 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('zakat-fitrah', function () {
         return Inertia::render('zakat-fitrah');
     })->name('zakat-fitrah');
-    Route::get('donasi', function () {
-        return Inertia::render('donations');
-    })->name('donations');
-    Route::get('materi-belajar', function () {
-        return Inertia::render('learning-materials');
-    })->name('learning-materials');
-    Route::get('penduduk', function () {
-        return Inertia::render('resident');
-    })->name('resident');
+    
+    // VILLAGE / DESA 
+    Route::get('penduduk', [VillageController::class, 'getVillageUsers'])->name('resident');
+    Route::patch('terima-penduduk', [VillageController::class, 'acceptUserVillage'])
+         ->middleware('check_village_role:admin')
+         ->name('accept-uservillage');
+    Route::patch('ubah-peran-penduduk', [VillageController::class, 'changeUserVillageRole'])
+         ->middleware('check_village_role:admin')
+         ->name('change-uservillage-role');
+
     Route::get('profil-desa', function () {
         return Inertia::render('village-profile');
     })->name('village-profile');
-    Route::get('cari-desa', function () {
-        return Inertia::render('explore-villages');
-    })->name('explore-villages');
-    Route::get('tambah-desa', function () {
-        return Inertia::render('new-village');
-    })->name('new-village');
+    Route::get('cari-desa', [VillageController::class, 'exploreVillages'])->name('explore-villages');
+    Route::post('gabung-desa', [VillageController::class, 'joinVillage'])->name('join-village');
+    Route::get('tambah-desa', [VillageController::class, 'create'])->name('new-village');
+    Route::post('tambah-desa', [VillageController::class, 'store'])->name('village.store');
+
     Route::get('zakat-fitrah/tambah-periode', function () {
         return Inertia::render('add-zakat-fitrah-periode');
     })->name('add-zakat-fitrah-periode');
     Route::get('zakat-fitrah/edit-periode', function () {
         return Inertia::render('edit-zakat-fitrah-periode');
     })->name('edit-zakat-fitrah-periode');
-    Route::get('donasi/tambah', function () {
-        return Inertia::render('add-donation');
-    })->name('add-donation');
-    Route::get('donasi/edit', function () {
-        return Inertia::render('edit-donation');
-    })->name('edit-donation');
-    Route::get('materi-belajar/tambah', function () {
-        return Inertia::render('add-learning-material');
-    })->name('add-learning-material');
-    Route::get('materi-belajar/edit', function () {
-        return Inertia::render('edit-learning-material');
-    })->name('edit-learning-material');
 
+    // ARTICLE / ARTIKEL BELAJAR 
+    Route::get('daftar-artikel', [ArticleController::class, 'list'])
+         ->name('article.list');
+    Route::delete('daftar-artikel/{id}', [ArticleController::class, 'destroy'])
+         ->middleware('check_village_role:admin|editor')
+         ->name('article.destroy');
+    Route::get('daftar-artikel/tambah', [ArticleController::class, 'add'])
+         ->middleware('check_village_role:admin|editor')
+         ->name('article.add');
+    Route::post('daftar-artikel/tambah', [ArticleController::class, 'store'])
+         ->middleware('check_village_role:admin|editor')
+         ->name('article.store');
+    Route::get('daftar-artikel/edit/{id}', [ArticleController::class, 'edit'])
+         ->middleware('check_village_role:admin|editor')
+         ->name('article.edit');
+    Route::post('daftar-artikel/edit/{id}', [ArticleController::class, 'update'])
+         ->middleware('check_village_role:admin|editor')
+         ->name('article.update');
+
+    // DONATION / SEDEKAH
+    Route::get('daftar-sedekah', [DonationController::class, 'list'])
+        ->name('donation.list');
+    Route::delete('daftar-sedekah/{id}', [DonationController::class, 'destroy'])
+        ->middleware('check_village_role:admin|editor')
+        ->name('donation.destroy');
+    Route::get('daftar-sedekah/tambah', [DonationController::class, 'add'])
+        ->middleware('check_village_role:admin|editor')
+        ->name('donation.add');
+    Route::post('daftar-sedekah/tambah', [DonationController::class, 'store'])
+        ->middleware('check_village_role:admin|editor')
+        ->name('donation.store');
+    Route::get('daftar-sedekah/edit/{id}', [DonationController::class, 'edit'])
+         ->middleware('check_village_role:admin|editor')
+         ->name('donation.edit');
+    Route::post('daftar-sedekah/edit/{id}', [DonationController::class, 'update'])
+         ->middleware('check_village_role:admin|editor')
+         ->name('donation.update');
 });
-
-Route::get('/api/provinces', [RegionController::class, 'getProvinces']);
-Route::get('/api/regencies/{provinceId}', [RegionController::class, 'getRegencies']);
-Route::get('/api/districts/{regencyId}', [RegionController::class, 'getDistricts']);
-Route::get('/api/villages/{districtId}', [RegionController::class, 'getVillages']);
 
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';
+require __DIR__.'/api.php';
