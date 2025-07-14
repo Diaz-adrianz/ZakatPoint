@@ -44,7 +44,7 @@ export default function ZakatFitrahPeriodeView({periode}: {periode: FitrahZakatP
 
             <Card>
                 <CardHeader>
-                    <CardTitle>Daftar Muzaki</CardTitle>
+                    <CardTitle>Daftar Muzakki</CardTitle>
                 </CardHeader>
                 <CardContent>
                     {periode.zakats?.map((data, i) => (

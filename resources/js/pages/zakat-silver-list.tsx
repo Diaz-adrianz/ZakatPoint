@@ -74,7 +74,7 @@ export default function ZakatSilverList({
                     <TableHeader>
                         <TableRow>
                             <TableHead className="w-8"></TableHead>
-                            <TableHead>Muzzaki</TableHead>
+                            <TableHead>Muzakki</TableHead>
                             <TableHead>Zakat</TableHead>
                             <TableHead>Berat</TableHead>
                             <TableHead></TableHead>
@@ -107,7 +107,7 @@ export default function ZakatSilverList({
             </Card>
 
             <div className="flex items-center gap-3">
-                <small className="!typo-small grow text-muted-foreground">Total {zakats.total} muzzaki</small>
+                <small className="!typo-small grow text-muted-foreground">Total {zakats.total} muzakki</small>
                 {zakats.prev_page_url && (
                     <Button variant={'outline'} size={'icon'} asChild>
                         <Link href={zakats.prev_page_url}>
