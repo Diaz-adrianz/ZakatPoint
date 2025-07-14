@@ -118,9 +118,9 @@ Route::get('/instruksi/{reference}', function ($reference) {
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('dasbor', function () {
-        return Inertia::render('dashboard');
-    })->name('dashboard');
+    Route::get('dasbor', [VillageController::class, 'dashboard'])   
+         ->name('dashboard');
+
     Route::get('daftar-desa', [VillageController::class, 'index'])->name('villages.index');
     Route::get('/daftar-desa/create', [VillageController::class, 'create'])->name('villages.create');
     Route::post('/daftar-desa', [VillageController::class, 'store'])->name('villages.store');

@@ -1,35 +1,94 @@
-import { PlaceholderPattern } from '@/components/ui/placeholder-pattern';
+import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import AppLayout from '@/layouts/app-layout';
+import { formatMoney } from '@/lib/utils';
+import { PieChart, Tooltip, Pie, Cell, ResponsiveContainer } from 'recharts';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/react';
+import { useMemo } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Dashboard',
-        href: '/dashboard',
+        title: 'Dasbor',
+        href: '/dasbor',
     },
 ];
 
-export default function Dashboard() {
+export default function Dashboard({
+    stats,
+}: {
+    stats?: { total: number; zakatGold: number; zakatSilver: number; zakatFitrah: number; donaturs: number };
+}) {
+
+    const pieChartData = useMemo(() => [
+        { name: 'Zakat emas', value: stats?.zakatGold || 0 },
+        { name: 'Zakat perak', value: stats?.zakatSilver || 0 },
+        { name: 'Zakat Fitrah', value: stats?.zakatFitrah || 0 },
+        { name: 'Sedekah', value: stats?.donaturs || 0 }
+    ], [stats])
+
+    const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Dasbor" />
-            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-                <div className="grid auto-rows-min gap-4 md:grid-cols-3">
-                    <div className="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
-                        <PlaceholderPattern className="absolute inset-0 size-full stroke-neutral-900/20 dark:stroke-neutral-100/20" />
+
+            {stats && (
+                <>
+                    <div className="flex flex-wrap gap-3">
+                        <Card className="min-w-80">
+                            <CardHeader>
+                                <CardDescription>Total terkumpul</CardDescription>
+                                <CardTitle className="typo-h3">{formatMoney(stats?.total, { shorten: true })}</CardTitle>
+                            </CardHeader>
+                        </Card>
+                        <Card className="min-w-80">
+                            <CardHeader>
+                                <CardDescription>Zakat Emas</CardDescription>
+                                <CardTitle className="typo-h3">{formatMoney(stats?.zakatGold, { shorten: true })}</CardTitle>
+                            </CardHeader>
+                        </Card>
+                        <Card className="min-w-80">
+                            <CardHeader>
+                                <CardDescription>Zakat Perak</CardDescription>
+                                <CardTitle className="typo-h3">{formatMoney(stats?.zakatSilver, { shorten: true })}</CardTitle>
+                            </CardHeader>
+                        </Card>
+                        <Card className="min-w-80">
+                            <CardHeader>
+                                <CardDescription>Zakat Fitrah</CardDescription>
+                                <CardTitle className="typo-h3">{formatMoney(stats?.zakatFitrah, { shorten: true })}</CardTitle>
+                            </CardHeader>
+                        </Card>
+
+                        <Card className="min-w-80">
+                            <CardHeader>
+                                <CardDescription>Sedekah</CardDescription>
+                                <CardTitle className="typo-h3">{formatMoney(stats?.donaturs)}</CardTitle>
+                            </CardHeader>
+                        </Card>
                     </div>
-                    <div className="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
-                        <PlaceholderPattern className="absolute inset-0 size-full stroke-neutral-900/20 dark:stroke-neutral-100/20" />
+
+                    <div className="mt-8">
+                        <ResponsiveContainer width="100%" height={300}>
+                            <PieChart>
+                                <Pie
+                                    data={pieChartData}
+                                    dataKey="value"
+                                    nameKey="name"
+                                    outerRadius={120}
+                                    fill="#8884d8"
+                                    label
+                                >
+                                    {pieChartData.map((entry, index) => (
+                                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                    ))}
+                                </Pie>
+                                <Tooltip />
+                            </PieChart>
+                        </ResponsiveContainer>
                     </div>
-                    <div className="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
-                        <PlaceholderPattern className="absolute inset-0 size-full stroke-neutral-900/20 dark:stroke-neutral-100/20" />
-                    </div>
-                </div>
-                <div className="relative min-h-[100vh] flex-1 overflow-hidden rounded-xl border border-sidebar-border/70 md:min-h-min dark:border-sidebar-border">
-                    <PlaceholderPattern className="absolute inset-0 size-full stroke-neutral-900/20 dark:stroke-neutral-100/20" />
-                </div>
-            </div>
+                </>
+            )}
         </AppLayout>
     );
 }
