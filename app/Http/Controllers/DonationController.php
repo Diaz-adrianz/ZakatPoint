@@ -31,13 +31,21 @@ class DonationController extends Controller
                   ->orWhere('slug', 'like', '%' . $search . '%');
         }
 
-        $query->withSum('donaturs', 'nominal');
+        $query->withSum(['donaturs' => function ($query) {
+                    $query->whereHas('payment', function ($query) {
+                        $query->where('status', 'SUCCESS');
+                    });
+                }], 'nominal');
 
         $donations = $query->orderBy('created_at', 'desc')->paginate($limit);
 
         $sumAllNominal = Donatur::whereHas('donation', function ($query) use ($villageId) {
-            $query->where('village_id', $villageId);
-        })->sum('nominal');
+                                    $query->where('village_id', $villageId);
+                                })
+                                ->whereHas('payment', function ($query) {
+                                    $query->where('status', 'SUCCESS');
+                                })            
+                                ->sum('nominal');
 
         return Inertia::render('donation-list', [
             'donations' => $donations,

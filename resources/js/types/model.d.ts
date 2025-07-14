@@ -118,3 +118,17 @@ export interface Payment {
     items?: PaymentItem[];
 }
   
+export interface IncomeZakat {
+    id: number
+    income_month:number
+    income_plus: number
+    amount: number
+    email: string
+    name: string
+    no_hp: string
+    gender: string
+    village_id: string
+    payment_id: string
+    village?: Village
+    payment?: Payment
+}

@@ -15,6 +15,7 @@ use Illuminate\Support\Carbon;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\DonationController;
 use App\Http\Controllers\PaymentController;
+use App\Models\IncomeZakat;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -128,9 +129,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('zakat-mal', function () {
         return Inertia::render('zakat-mal');
     })->name('zakat-mal');
-    Route::get('zakat-penghasilan', function () {
-        return Inertia::render('zakat-income');
-    })->name('zakat-income');
+
+    // ZAKAT INCOME / PENGHASILAN
+    Route::get('zakat-penghasilan', [IncomeZakatController::class, 'list'])
+         ->name('zakat-income-list');
+
     Route::get('zakat-fitrah', function () {
         return Inertia::render('zakat-fitrah');
     })->name('zakat-fitrah');
