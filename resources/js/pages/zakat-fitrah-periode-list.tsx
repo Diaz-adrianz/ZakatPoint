@@ -9,7 +9,7 @@ import { formatMoney } from '@/lib/utils';
 import { SharedData, type BreadcrumbItem } from '@/types';
 import { FitrahZakatPeriode, PaginatedResponse } from '@/types/model';
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
-import { ChevronLeftIcon, ChevronRightIcon, Edit2Icon, PlusIcon, Trash2Icon } from 'lucide-react';
+import { ChevronLeftIcon, ChevronRightIcon, Edit2Icon, ListIcon, PlusIcon, Trash2Icon } from 'lucide-react';
 import moment from 'moment';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -121,6 +121,11 @@ export default function ZakatFitrahPeriodeList({
                                 </TableCell>
                                 <TableCell>
                                     <div className="flex items-center gap-3">
+                                        <Button variant={'outline'} size={'icon'} asChild>
+                                            <Link href={route('zakat-fitrah-periode.view', { code: dat.code })}>
+                                                <ListIcon />
+                                            </Link>
+                                        </Button>
                                         <Button variant={'outline'} size={'icon'} asChild>
                                             <Link href={route('zakat-fitrah-periode.edit', { id: dat.id })}>
                                                 <Edit2Icon />

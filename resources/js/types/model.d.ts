@@ -173,6 +173,7 @@ export interface FitrahZakatPeriode {
     created_at?: string
     updated_at?: string
     zakats_sum_amount?: number;
+    zakats?: FitrahZakat[]
 }
 
 export interface FitrahZakat {

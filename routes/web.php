@@ -208,6 +208,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // ZAKAT FITRAH PERIODE
     Route::get('zakat-fitrah', [FitrahZakatPeriodeSesssionController::class, 'list'])
         ->name('zakat-fitrah-periode.list');
+    Route::get('zakat-fitrah/view/{code}', [FitrahZakatPeriodeSesssionController::class, 'view'])
+            ->middleware('check_village_role:admin|editor|member')
+            ->name('zakat-fitrah-periode.view');
     Route::delete('zakat-fitrah/{id}', [FitrahZakatPeriodeSesssionController::class, 'destroy'])
         ->middleware('check_village_role:admin|editor')
         ->name('zakat-fitrah-periode.destroy');

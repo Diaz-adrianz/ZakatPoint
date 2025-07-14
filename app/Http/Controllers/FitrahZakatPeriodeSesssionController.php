@@ -61,6 +61,28 @@ class FitrahZakatPeriodeSesssionController extends Controller
         return Inertia::render('zakat-fitrah-periode-add');
     }
 
+    public function view($code)
+    {
+        $periode = FitrahZakatPeriodeSession::where('code', $code)
+                            ->with("village")
+                            ->with(['zakats' => function ($query) {
+                                $query->whereHas('payment', function ($query) {
+                                    $query->where('status', 'SUCCESS');
+                                });
+                                $query->orderBy('created_at', 'desc'); 
+                            }])
+                            ->withSum(['zakats' => function ($query) {
+                                $query->whereHas('payment', function ($query) {
+                                    $query->where('status', 'SUCCESS');
+                                });
+                            }], 'amount')
+                            ->first();
+        
+        return Inertia::render('zakat-fitrah-periode-view', [
+            'periode' => $periode,
+        ]); 
+    }
+
     public function edit($id)
     {
         $periode = FitrahZakatPeriodeSession::findOrFail($id);
