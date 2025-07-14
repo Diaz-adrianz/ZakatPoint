@@ -8,6 +8,7 @@ use App\Http\Controllers\InstructionController;
 use App\Http\Controllers\RegionController;
 use App\Http\Controllers\SilverZakatController;
 use App\Http\Controllers\VillageController;
+use App\Http\Controllers\FitrahZakatPeriodeSesssionController;
 use App\Models\FitrahZakatPeriodeSession;
 use App\Models\Payment;
 use Illuminate\Http\Request;
@@ -142,10 +143,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('zakat-perak', [SilverZakatController::class, 'list'])
         ->name('zakat-silver-list');
 
-    Route::get('zakat-fitrah', function () {
-        return Inertia::render('zakat-fitrah');
-    })->name('zakat-fitrah');
-    
     // VILLAGE / DESA 
     Route::get('penduduk', [VillageController::class, 'getVillageUsers'])->name('resident');
     Route::patch('terima-penduduk', [VillageController::class, 'acceptUserVillage'])
@@ -207,6 +204,25 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('daftar-sedekah/edit/{id}', [DonationController::class, 'update'])
          ->middleware('check_village_role:admin|editor')
          ->name('donation.update');
+
+    // ZAKAT FITRAH PERIODE
+    Route::get('zakat-fitrah', [FitrahZakatPeriodeSesssionController::class, 'list'])
+        ->name('zakat-fitrah-periode.list');
+    Route::delete('zakat-fitrah/{id}', [FitrahZakatPeriodeSesssionController::class, 'destroy'])
+        ->middleware('check_village_role:admin|editor')
+        ->name('zakat-fitrah-periode.destroy');
+    Route::get('zakat-fitrah/tambah', [FitrahZakatPeriodeSesssionController::class, 'add'])
+        ->middleware('check_village_role:admin|editor')
+        ->name('zakat-fitrah-periode.add');
+    Route::post('zakat-fitrah/tambah', [FitrahZakatPeriodeSesssionController::class, 'store'])
+        ->middleware('check_village_role:admin|editor')
+        ->name('zakat-fitrah-periode.store');
+    Route::get('zakat-fitrah/edit/{id}', [FitrahZakatPeriodeSesssionController::class, 'edit'])
+         ->middleware('check_village_role:admin|editor')
+         ->name('zakat-fitrah-periode.edit');
+    Route::post('zakat-fitrah/edit/{id}', [FitrahZakatPeriodeSesssionController::class, 'update'])
+         ->middleware('check_village_role:admin|editor')
+         ->name('zakat-fitrah-periode.update');
 });
 
 require __DIR__.'/settings.php';

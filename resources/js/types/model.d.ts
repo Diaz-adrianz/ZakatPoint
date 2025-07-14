@@ -155,8 +155,36 @@ export interface SilverZakat {
     name: string
     no_hp: string
     gender: string
-    village_id: string
-    payment_id: string
+    village_id: number
+    payment_id: number
     village?: Village
     payment?: Payment
+}
+
+export interface FitrahZakatPeriode {
+    id: number
+    start_date: string
+    end_date: string
+    title: string
+    rice_price: number
+    code: string
+    village_id: number
+    village?: Village
+    created_at?: string
+    updated_at?: string
+    zakats_sum_amount?: number;
+}
+
+export interface FitrahZakat {
+    dependents: number
+    amount: number
+    email: string
+    name: string
+    no_hp: string
+    gender: string
+    fitrah_session_id: number
+    payment_id: number
+    payment?: Payment
+    created_at?: string
+    updated_at?: string
 }
