@@ -8,6 +8,7 @@ use App\Http\Controllers\InstructionController;
 use App\Http\Controllers\RegionController;
 use App\Http\Controllers\SilverZakatController;
 use App\Http\Controllers\VillageController;
+use App\Http\Controllers\FitrahZakatPeriodeSesssionController;
 use App\Models\FitrahZakatPeriodeSession;
 use App\Models\Payment;
 use Illuminate\Http\Request;
@@ -15,6 +16,7 @@ use Illuminate\Support\Carbon;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\DonationController;
 use App\Http\Controllers\PaymentController;
+use App\Models\IncomeZakat;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -116,9 +118,9 @@ Route::get('/instruksi/{reference}', function ($reference) {
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('dasbor', function () {
-        return Inertia::render('dashboard');
-    })->name('dashboard');
+    Route::get('dasbor', [VillageController::class, 'dashboard'])   
+         ->name('dashboard');
+
     Route::get('daftar-desa', [VillageController::class, 'index'])->name('villages.index');
     Route::get('/daftar-desa/create', [VillageController::class, 'create'])->name('villages.create');
     Route::post('/daftar-desa', [VillageController::class, 'store'])->name('villages.store');
@@ -128,13 +130,19 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('zakat-mal', function () {
         return Inertia::render('zakat-mal');
     })->name('zakat-mal');
-    Route::get('zakat-penghasilan', function () {
-        return Inertia::render('zakat-income');
-    })->name('zakat-income');
-    Route::get('zakat-fitrah', function () {
-        return Inertia::render('zakat-fitrah');
-    })->name('zakat-fitrah');
-    
+
+    // ZAKAT INCOME / PENGHASILAN
+    Route::get('zakat-penghasilan', [IncomeZakatController::class, 'list'])
+         ->name('zakat-income-list');
+
+    // ZAKAT GOLD / EMAS
+    Route::get('zakat-emas', [GoldZakatController::class, 'list'])
+        ->name('zakat-gold-list');
+
+    // ZAKAT SILVER / PERAK
+    Route::get('zakat-perak', [SilverZakatController::class, 'list'])
+        ->name('zakat-silver-list');
+
     // VILLAGE / DESA 
     Route::get('penduduk', [VillageController::class, 'getVillageUsers'])->name('resident');
     Route::patch('terima-penduduk', [VillageController::class, 'acceptUserVillage'])
@@ -196,6 +204,28 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('daftar-sedekah/edit/{id}', [DonationController::class, 'update'])
          ->middleware('check_village_role:admin|editor')
          ->name('donation.update');
+
+    // ZAKAT FITRAH PERIODE
+    Route::get('zakat-fitrah', [FitrahZakatPeriodeSesssionController::class, 'list'])
+        ->name('zakat-fitrah-periode.list');
+    Route::get('zakat-fitrah/view/{code}', [FitrahZakatPeriodeSesssionController::class, 'view'])
+            ->middleware('check_village_role:admin|editor|member')
+            ->name('zakat-fitrah-periode.view');
+    Route::delete('zakat-fitrah/{id}', [FitrahZakatPeriodeSesssionController::class, 'destroy'])
+        ->middleware('check_village_role:admin|editor')
+        ->name('zakat-fitrah-periode.destroy');
+    Route::get('zakat-fitrah/tambah', [FitrahZakatPeriodeSesssionController::class, 'add'])
+        ->middleware('check_village_role:admin|editor')
+        ->name('zakat-fitrah-periode.add');
+    Route::post('zakat-fitrah/tambah', [FitrahZakatPeriodeSesssionController::class, 'store'])
+        ->middleware('check_village_role:admin|editor')
+        ->name('zakat-fitrah-periode.store');
+    Route::get('zakat-fitrah/edit/{id}', [FitrahZakatPeriodeSesssionController::class, 'edit'])
+         ->middleware('check_village_role:admin|editor')
+         ->name('zakat-fitrah-periode.edit');
+    Route::post('zakat-fitrah/edit/{id}', [FitrahZakatPeriodeSesssionController::class, 'update'])
+         ->middleware('check_village_role:admin|editor')
+         ->name('zakat-fitrah-periode.update');
 });
 
 require __DIR__.'/settings.php';
