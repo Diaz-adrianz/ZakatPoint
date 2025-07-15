@@ -151,6 +151,12 @@ export default function ZakatView({ type, sid }: Props) {
                     </Select>
                 </div>
 
+                <p className='text-center typo-p'>
+                    <img src="https://bayarzakat.baznas.go.id//assets/images/niat.jpg" className='w-full mb-3' alt="" />
+                    “Nawaitu an ukhrija zakata maali fardhan lillahi ta'aala.”
+                    Aku niat mengeluarkan zakat hartaku fardhu karena Allah Ta'ala.
+                </p>
+
                 <Button className="mt-6 w-full" size={'lg'} disabled={processing}>
                     <ShieldCheckIcon /> Bayar
                 </Button>
