@@ -20,7 +20,7 @@ class SilverZakatController extends Controller
         $villageId = $request->cookie('village_id');
 
         $query = SilverZakat::query()
-                            ->with('payment:id,status');
+                            ->with('payment:id,status,payment_type');
 
         if ($villageId) {
             $query->where("village_id", $villageId);

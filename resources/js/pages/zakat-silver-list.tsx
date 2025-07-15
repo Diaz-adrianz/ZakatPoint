@@ -93,6 +93,7 @@ export default function ZakatSilverList({
                                     {dat.payment?.status == 'PENDING' && <Badge variant={'warning'}>{dat.payment.status}</Badge>}
                                     {dat.payment?.status == 'SUCCESS' && <Badge variant={'success'}>{dat.payment.status}</Badge>}
                                     {dat.payment?.status == 'FAILURE' && <Badge variant={'destructive'}>{dat.payment.status}</Badge>}
+                                    {dat.payment?.payment_type && <small className='block typo-small text-muted-foreground mt-2'>{dat.payment.payment_type}</small>}
                                 </TableCell>
                                 <TableCell>
                                     <p className="!typo-p">{formatMoney(dat.amount)}</p>
