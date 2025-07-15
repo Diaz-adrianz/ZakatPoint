@@ -128,95 +128,37 @@ class PaymentController extends Controller
 
     public function handleMidtransWebhook(Request $request)
     {
-        try {
-            $notif = new Notification();
-        } catch (\Exception $e) {
-            error_log("Midtrans Notification Error: " . $e->getMessage());
-            return response()->json(['message' => 'Invalid notification data'], 400);
-        }
-        
-        $transactionStatus = $notif->transaction_status;
-        $paymentType = $notif->payment_type;
-        $orderId = $notif->order_id;
-        $fraudStatus = $notif->fraud_status;
-        $statusCode = $notif->status_code;
-        $grossAmount = $notif->gross_amount; 
-        $transactionTime = $notif->transaction_time;
-        $signatureKey = $notif->signature_key;
+        $serverKey = config('midtrans.server_key');
 
-        $hashed = hash('sha512', $orderId . $statusCode . $grossAmount . Config::$serverKey);
+        $signatureKey = hash("sha512",
+            $request->order_id .
+            $request->status_code .
+            $request->gross_amount .
+            $serverKey
+        );
 
-        if ($hashed != $signatureKey) {
-            error_log("Midtrans Webhook: Invalid signature key for Order ID: " . $orderId);
-            return response()->json(['message' => 'Invalid signature key'], 403); // Forbidden
+        if ($signatureKey !== $request->signature_key) {
+            return response()->json(['message' => 'Invalid signature key'], 403);
         }
 
-        error_log("Midtrans Webhook Received for Order ID: " . $orderId .
-                  ", Status: " . $transactionStatus .
-                  ", Type: " . $paymentType .
-                  ", Fraud: " . $fraudStatus);
-
-        $payment = Payment::where('order_id', $orderId)->first();
+        $payment = Payment::where('order_id', $request->order_id)->first();
 
         if (!$payment) {
-            error_log("Midtrans Webhook: Payment with Order ID " . $orderId . " not found in database.");
+            Log::error("hello");
             return response()->json(['message' => 'Payment not found'], 404);
         }
 
-        $newPaymentStatus = '';
-        $message = '';
-
-        switch ($transactionStatus) {
-            case 'capture':
-                if ($paymentType == 'credit_card') {
-                    if ($fraudStatus == 'accept') {
-                        $newPaymentStatus = 'SUCCESS';
-                        $message = "Transaction order_id: " . $orderId . " successfully captured using " . $paymentType . " (Fraud: Accept)";
-                    } else if ($fraudStatus == 'challenge') {
-                        $newPaymentStatus = 'PENDING';
-                        $message = "Transaction order_id: " . $orderId . " challenged using " . $paymentType;
-                    } else {
-                        $newPaymentStatus = 'FAILURE';
-                        $message = "Transaction order_id: " . $orderId . " denied by fraud detection using " . $paymentType;
-                    }
-                } else { 
-                    $newPaymentStatus = 'SUCCESS';
-                    $message = "Transaction order_id: " . $orderId . " successfully captured using " . $paymentType;
-                }
-                break;
-            case 'settlement':
-                $newPaymentStatus = 'SUCCESS';
-                $message = "Transaction order_id: " . $orderId . " successfully settled using " . $paymentType;
-                break;
-            case 'pending':
-                $newPaymentStatus = 'PENDING';
-                $message = "Waiting customer to finish transaction order_id: " . $orderId . " using " . $paymentType;
-                break;
-            case 'deny':
-            case 'expire':
-            case 'cancel':
-                $newPaymentStatus = 'FAILURE';
-                $message = "Payment using " . $paymentType . " for transaction order_id: " . $orderId . " is " . $transactionStatus . ".";
-                break;
-            case 'refund':
-            case 'partial_refund':
-                $newPaymentStatus = 'FAILURE';
-                $message = "Transaction order_id: " . $orderId . " has been refunded.";
-                break;
-            default:
-                $newPaymentStatus = 'FAILURE';
-                $message = "Unhandled transaction status: " . $transactionStatus . " for order_id: " . $orderId;
-                break;
+        if ($request->transaction_status == 'settlement' || $request->transaction_status == 'capture') {
+            $payment->status = 'SUCCESS';
+        } elseif ($request->transaction_status == 'cancel' || $request->transaction_status == 'expire') {
+            $payment->status = 'FAILURE';
+        } elseif ($request->transaction_status == 'pending') {
+            $payment->status = 'PENDING';
         }
 
-        $payment->status = $newPaymentStatus;
-        $payment->payment_type = $paymentType;
-        $payment->amount = $grossAmount; 
-        $payment->status_update_at = $transactionTime;
+        $payment->payment_type = $request->payment_type;
         $payment->save();
 
-        echo $message;
-
-        return response()->json(['message' => 'Notification received and processed', 'status' => $newPaymentStatus], 200);
+        return response()->json(['message' => 'Webhook processed successfully']);
     }
 }

@@ -22,7 +22,7 @@ Route::prefix('api')->group(function () {
          ->name("article.chat");
 
     Route::post('/midtrans-webhook', [PaymentController::class, 'handleMidtransWebhook'])
-         ->withoutMiddleware([VerifyCsrfToken::class]);
+         ->name('midtrans-webhook');
 
     Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/user-villages', [VillageController::class, 'userVillages']);        

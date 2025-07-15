@@ -24,6 +24,11 @@ return Application::configure(basePath: dirname(__DIR__))
             AddLinkHeadersForPreloadedAssets::class,
         ]);
 
+        $middleware->validateCsrfTokens(except: [
+            'api/midtrans-webhook',
+        ]);
+        
+
         $middleware->alias([
             'is_village_admin' => IsVillageAdmin::class,
             'check_village_role' => CheckVillageRole::class
