@@ -2,6 +2,7 @@ import Container from '@/components/container';
 import { Button } from '@/components/ui/button';
 import VisitorLayout from '@/layouts/visitor-layout';
 import { Link } from '@inertiajs/react';
+import ChatBotArticle from '@/components/chatbot-article';
 
 const Home = () => {
     return (
@@ -22,6 +23,7 @@ const Home = () => {
                     </Button>
                 </div>
             </Container>
+            <ChatBotArticle />
         </VisitorLayout>
     );
 };
