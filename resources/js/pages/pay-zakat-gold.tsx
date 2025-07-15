@@ -1,3 +1,9 @@
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { formatMoney } from '@/lib/utils';
+import { AlertTriangleIcon, GemIcon, UserCircleIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import ZakatView from './zakat-view';
 
@@ -56,6 +62,7 @@ export default function PayZakatGold({ village, csrf }: Props) {
             const j = await r.json();
             if (j.success) setSid(j.sid);
             else setError(j.message || 'Gagal membuat transaksi.');
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (e: any) {
             setError(e.message || 'Terjadi kesalahan.');
         } finally {
@@ -65,48 +72,67 @@ export default function PayZakatGold({ village, csrf }: Props) {
 
     return (
         <div className="space-y-6">
-            <form onSubmit={calcZakat} className="space-y-3">
-                <input className="input" type="number" placeholder="Berat emas (gram)" value={weight} onChange={(e) => setWeight(e.target.value)} />
+            <form onSubmit={calcZakat} className="flex flex-col gap-6">
+                <div className="grid gap-2">
+                    <Label>Berat emas (gram)</Label>
+                    <Input type="number" placeholder="0" value={weight} onChange={(e) => setWeight(e.target.value)} />
+                </div>
                 {goldInfo && (
-                    <small className="block text-muted-foreground">
-                        Nisab ≈ Rp {goldInfo.nisab_value.toLocaleString('id-ID')}
-                        &nbsp;(harga {goldInfo.price_per_gram.toLocaleString('id-ID')} / gr)
-                    </small>
+                    <Alert variant="info">
+                        <GemIcon />
+                        <AlertTitle>Nisab</AlertTitle>
+                        <AlertDescription>
+                            Nisab ≈ {formatMoney(goldInfo.nisab_value)}
+                            &nbsp;(emas {goldInfo.price_per_gram.toLocaleString('id-ID')} / gr)
+                        </AlertDescription>
+                    </Alert>
                 )}
-                <button className="btn btn-primary w-full" disabled={!village}>
-                    Hitung Zakat
-                </button>
+                <Button variant={result?.is_nisab ? 'secondary' : 'default'} disabled={!village}>
+                    Hitung Zakat
+                </Button>
+
                 {result && goldInfo && (
-                    <div className="text-center text-sm text-muted-foreground">
-                        <p>
+                    <Alert variant="info">
+                        <UserCircleIcon />
+                        <AlertTitle>Emas Anda</AlertTitle>
+                        <AlertDescription>
                             Harga emas Anda: {parseFloat(weight).toLocaleString('id-ID')} gr × Rp {goldInfo.price_per_gram.toLocaleString('id-ID')} =
                             Rp {(parseFloat(weight) * goldInfo.price_per_gram).toLocaleString('id-ID')}
-                        </p>
-                    </div>
+                        </AlertDescription>
+                    </Alert>
                 )}
 
                 {result && !result.is_nisab && (
-                    <div className="space-y-3 text-center text-sm text-muted-foreground">
-                        <p>
+                    <Alert variant="destructive">
+                        <AlertTriangleIcon />
+                        <AlertTitle>Nisab</AlertTitle>
+                        <AlertDescription>
                             {result.amount === 0
                                 ? 'Harga emas belum mencapai nisab.'
                                 : 'Harga emas belum mencapai nisab; Anda belum wajib membayar zakat.'}
-                        </p>
-                    </div>
+                        </AlertDescription>
+                    </Alert>
                 )}
             </form>
 
-            {error && <p className="text-sm text-red-600">{error}</p>}
-
+            {error && 
+                <Alert variant="destructive">
+                    <AlertTriangleIcon />
+                    <AlertTitle>Terjadi kesalahan</AlertTitle>
+                    <AlertDescription>
+                        {error}
+                    </AlertDescription>
+                </Alert>
+            }
+            
             {result?.is_nisab && (
-                <div className="space-y-3 text-center">
-                    <p className="text-lg">Harga emas anda mencapai nisab.</p>
-                    <p className="text-lg">Anda wajib bayar zakat.</p>
-                    <p className="text-lg font-semibold">Zakat yang harus dibayar</p>
-                    <p className="text-2xl font-bold">Rp {result.amount.toLocaleString('id-ID')}</p>
-                    <button className="btn btn-success w-full" onClick={handlePrepare} disabled={loading}>
-                        {loading ? 'Memproses…' : 'Bayar Zakat'}
-                    </button>
+                <div className="border p-3 rounded-md bg-primary/15 border-primary/40 text-center text-primary">
+                    <h4 className="typo-h4 mb-3">Harga emas Anda mencapai nisab.<br />Anda wajib bayar zakat.</h4>
+                    <p className="typo-p">Zakat yang harus dibayar</p>
+                    <h1 className="typo-h1 animate-pulse">{formatMoney(result.amount, {shorten: false})}</h1>
+                    <Button className="mt-6 w-full" size={'lg'} onClick={handlePrepare} disabled={loading}>
+                        {loading ? 'Memproses…' : 'Bayar Zakat'}
+                    </Button>
                 </div>
             )}
             {sid && <ZakatView type="gold" sid={sid} />}
