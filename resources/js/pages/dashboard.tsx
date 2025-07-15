@@ -16,17 +16,18 @@ const breadcrumbs: BreadcrumbItem[] = [
 export default function Dashboard({
     stats,
 }: {
-    stats?: { total: number; zakatGold: number; zakatSilver: number; zakatFitrah: number; donaturs: number };
+    stats?: { total: number; zakatGold: number; zakatSilver: number; zakatIncome: number; zakatFitrah: number; donaturs: number };
 }) {
 
     const pieChartData = useMemo(() => [
         { name: 'Zakat emas', value: stats?.zakatGold || 0 },
         { name: 'Zakat perak', value: stats?.zakatSilver || 0 },
+        { name: 'Zakat penghasilan', value: stats?.zakatIncome || 0 },
         { name: 'Zakat Fitrah', value: stats?.zakatFitrah || 0 },
         { name: 'Sedekah', value: stats?.donaturs || 0 }
     ], [stats])
 
-    const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
+    const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#A28DFF'];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -55,6 +56,12 @@ export default function Dashboard({
                         </Card>
                         <Card className="min-w-80">
                             <CardHeader>
+                                <CardDescription>Zakat Penghasilan</CardDescription>
+                                <CardTitle className="typo-h3">{formatMoney(stats?.zakatIncome, { shorten: true })}</CardTitle>
+                            </CardHeader>
+                        </Card>
+                        <Card className="min-w-80">
+                            <CardHeader>
                                 <CardDescription>Zakat Fitrah</CardDescription>
                                 <CardTitle className="typo-h3">{formatMoney(stats?.zakatFitrah, { shorten: true })}</CardTitle>
                             </CardHeader>
@@ -77,13 +84,13 @@ export default function Dashboard({
                                     nameKey="name"
                                     outerRadius={120}
                                     fill="#8884d8"
-                                    label
+                                    label={({ value }) => `${formatMoney(value, { shorten: true })}`}
                                 >
                                     {pieChartData.map((entry, index) => (
                                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                                     ))}
                                 </Pie>
-                                <Tooltip />
+                                <Tooltip formatter={(value) => formatMoney(+value, { shorten: false })}/>
                             </PieChart>
                         </ResponsiveContainer>
                     </div>

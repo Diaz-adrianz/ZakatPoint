@@ -19,7 +19,8 @@ class SilverZakatController extends Controller
         $limit = min(max(1, (int)$limit), 100);
         $villageId = $request->cookie('village_id');
 
-        $query = SilverZakat::query();
+        $query = SilverZakat::query()
+                            ->with('payment:id,status');
 
         if ($villageId) {
             $query->where("village_id", $villageId);
