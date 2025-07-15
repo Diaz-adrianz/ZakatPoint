@@ -10,7 +10,6 @@ use App\Models\Payment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
-use Inertia\Inertia;
 
 class IncomeZakatController extends Controller
 {

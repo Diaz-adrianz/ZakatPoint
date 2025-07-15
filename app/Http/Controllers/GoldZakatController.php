@@ -6,7 +6,6 @@ use App\Helpers\MetalPriceHelper;
 use App\Mail\InstructionMail;
 use App\Models\GoldZakat;
 use App\Models\Payment;
-use Inertia\Inertia;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Inertia\Inertia;
