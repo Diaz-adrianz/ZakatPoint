@@ -18,7 +18,9 @@ class GoldZakatController extends Controller
         $limit = min(max(1, (int)$limit), 100);
         $villageId = $request->cookie('village_id');
 
-        $query = GoldZakat::query();
+        $query = GoldZakat::query()
+                          ->with('payment:id,status');
+
 
         if ($villageId) {
             $query->where("village_id", $villageId);

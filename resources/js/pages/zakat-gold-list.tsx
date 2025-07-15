@@ -1,4 +1,5 @@
 import Flash from '@/components/flash';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -75,6 +76,7 @@ export default function ZakatGoldList({
                         <TableRow>
                             <TableHead className="w-8"></TableHead>
                             <TableHead>Muzakki</TableHead>
+                            <TableHead>Status</TableHead>
                             <TableHead>Zakat</TableHead>
                             <TableHead>Berat</TableHead>
                             <TableHead></TableHead>
@@ -86,6 +88,11 @@ export default function ZakatGoldList({
                                 <TableCell className="typo-p">{(zakats.current_page - 1) * zakats.per_page + i + 1}</TableCell>
                                 <TableCell>
                                     <p className="!typo-p">{dat.gender} {dat.name}</p>
+                                </TableCell>
+                                <TableCell>
+                                    {dat.payment?.status == 'PENDING' && <Badge variant={'warning'}>{dat.payment.status}</Badge>}
+                                    {dat.payment?.status == 'SUCCESS' && <Badge variant={'success'}>{dat.payment.status}</Badge>}
+                                    {dat.payment?.status == 'FAILURE' && <Badge variant={'destructive'}>{dat.payment.status}</Badge>}
                                 </TableCell>
                                 <TableCell>
                                     <p className="!typo-p">{formatMoney(dat.amount)}</p>

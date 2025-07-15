@@ -1,8 +1,14 @@
 import Container from '@/components/container';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import VisitorLayout from '@/layouts/visitor-layout';
+import { formatMoney } from '@/lib/utils';
 import { Head, usePage } from '@inertiajs/react';
+import { AlertTriangleIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import ZakatView from './zakat-view';
+import { Button } from '@/components/ui/button';
 
 const PayZakatFitrah = () => {
     const { session, village } = usePage<{
@@ -18,7 +24,7 @@ const PayZakatFitrah = () => {
     const [sid, setSid] = useState<string | null>(null);
 
     useEffect(() => {
-        setAmount(dependents * 2.5 * ricePrice);
+        setAmount(dependents * (2.5 * ricePrice));
     }, [dependents, ricePrice]);
 
     const handlePayClick = async () => {
@@ -44,6 +50,7 @@ const PayZakatFitrah = () => {
             } else {
                 setError('Gagal memproses permintaan.');
             }
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (e: any) {
             setError(e.message || 'Terjadi kesalahan.');
         }
@@ -62,49 +69,54 @@ const PayZakatFitrah = () => {
             <Head title="Bayar Zakat Fitrah" />
             <Container className="flex flex-col items-center gap-6">
                 <h1 className="typo-h1 text-center">Salurkan Zakat Fitrah Anda</h1>
-                <p className="typo-p text-center text-muted-foreground">
-                    Desa: {village?.name ?? '-'} <br />
-                    Periode: {session.title} | Harga beras default: Rp {session.rice_price.toLocaleString('id-ID')} / kg
-                </p>
-
-                {error && <p className="text-sm text-red-600">{error}</p>}
-
-                <div className="w-full max-w-md space-y-4">
-                    <h2 className="text-lg font-semibold">Kalkulator Zakat Fitrah</h2>
-                    <div className="flex flex-col gap-2">
-                        <label className="text-sm font-medium">
-                            Jumlah tanggungan
-                            <input
-                                className="input mt-1"
-                                type="number"
-                                min="1"
-                                value={dependents}
-                                onChange={(e) => setDependents(parseInt(e.target.value))}
-                            />
-                        </label>
-                        <label className="text-sm font-medium">
-                            Harga beras per kg
-                            <input
-                                className="input mt-1"
-                                type="number"
-                                min="1000"
-                                step="100"
-                                value={ricePrice}
-                                onChange={(e) => setRicePrice(parseInt(e.target.value))}
-                            />
-                        </label>
-                        <button className="btn btn-primary mt-2" type="button" onClick={() => setZakatCalculated(true)}>
-                            Hitung Zakat
-                        </button>
+            </Container>
+            <Container className="flex max-w-lg flex-col gap-6 rounded-md border">
+                <div className="flex flex-wrap items-center justify-between gap-6">
+                    <div>
+                        <p className="typo-p text-muted-foreground">Desa</p>
+                        <h4 className="typo-h4">{village?.name}</h4>
+                    </div>
+                    <div>
+                        <p className="typo-p text-muted-foreground">Periode</p>
+                        <h4 className="typo-h4">{session.title}</h4>
+                    </div>
+                    <div>
+                        <p className="typo-p text-muted-foreground">Harga beras per 1 sha'</p>
+                        <h4 className="typo-h4">{formatMoney(session.rice_price)}</h4>
                     </div>
                 </div>
 
+                {error && (
+                    <Alert variant="destructive">
+                        <AlertTriangleIcon />
+                        <AlertTitle>Terjadi kesalahan</AlertTitle>
+                        <AlertDescription>{error}</AlertDescription>
+                    </Alert>
+                )}
+
+                <div className="flex flex-col gap-6">
+                    <div className="grid gap-2">
+                        <Label>Jumlah tanggungan</Label>
+                        <Input type="number" min={1} value={dependents} onChange={(e) => setDependents(+e.target.value)} />
+                    </div>
+                    <div className="grid gap-2">
+                        <Label>Harga beras per kg</Label>
+                        <Input type="number" min="1000" step="100" value={ricePrice} onChange={(e) => setRicePrice(parseInt(e.target.value))} />
+                        <small className="!typo-small text-muted-foreground">{formatMoney(+ricePrice)}</small>
+                        <small className="!typo-small text-muted-foreground">Anda dapat menyesuaikan kembali dengan harga beras yang biasa Anda beli</small>
+                    </div>
+                    <Button variant={zakatCalculated ? 'secondary' : 'default'} type='button' onClick={() => setZakatCalculated(true)}>
+                        Hitung Zakat
+                    </Button>
+                </div>
+
                 {zakatCalculated && (
-                    <div className="mt-6 w-full max-w-md space-y-4 text-center">
-                        <p className="font-semibold">Total zakat: Rp {amount.toLocaleString('id-ID')}</p>
-                        <button className="btn btn-success w-full" onClick={handlePayClick}>
+                    <div className="border p-3 rounded-md bg-primary/15 border-primary/40 text-center text-primary">
+                        <p className="typo-p">Zakat yang harus dibayar</p>
+                        <h1 className="typo-h1 animate-pulse">{formatMoney(amount, {shorten: false})}</h1>
+                        <Button className="mt-6 w-full" size={'lg'} onClick={handlePayClick}>
                             Bayar Zakat
-                        </button>
+                        </Button>
                     </div>
                 )}
                 {sid && <ZakatView type="fitrah" sid={sid} />}

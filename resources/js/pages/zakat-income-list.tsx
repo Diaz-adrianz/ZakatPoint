@@ -1,4 +1,5 @@
 import Flash from '@/components/flash';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -7,7 +8,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import AppLayout from '@/layouts/app-layout';
 import { formatMoney } from '@/lib/utils';
 import { SharedData, type BreadcrumbItem } from '@/types';
-import {  IncomeZakat, PaginatedResponse } from '@/types/model';
+import { IncomeZakat, PaginatedResponse } from '@/types/model';
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import { ChevronLeftIcon, ChevronRightIcon, DownloadIcon } from 'lucide-react';
 
@@ -46,7 +47,6 @@ export default function ZakatIncomeList({
 
             <Flash flash={flash} />
 
-
             <div className="flex flex-wrap gap-3">
                 <Card className="min-w-80">
                     <CardHeader>
@@ -76,6 +76,7 @@ export default function ZakatIncomeList({
                         <TableRow>
                             <TableHead className="w-8"></TableHead>
                             <TableHead>Muzakki</TableHead>
+                            <TableHead>Status</TableHead>
                             <TableHead>Zakat</TableHead>
                             <TableHead>Penghasilan/bulan</TableHead>
                             <TableHead>Penghasilan tambahan</TableHead>
@@ -87,7 +88,14 @@ export default function ZakatIncomeList({
                             <TableRow key={i}>
                                 <TableCell className="typo-p">{(zakats.current_page - 1) * zakats.per_page + i + 1}</TableCell>
                                 <TableCell>
-                                    <p className="!typo-p">{dat.gender} {dat.name}</p>
+                                    <p className="!typo-p">
+                                        {dat.gender} {dat.name}
+                                    </p>
+                                </TableCell>
+                                <TableCell>
+                                    {dat.payment?.status == 'PENDING' && <Badge variant={'warning'}>{dat.payment.status}</Badge>}
+                                    {dat.payment?.status == 'SUCCESS' && <Badge variant={'success'}>{dat.payment.status}</Badge>}
+                                    {dat.payment?.status == 'FAILURE' && <Badge variant={'destructive'}>{dat.payment.status}</Badge>}
                                 </TableCell>
                                 <TableCell>
                                     <p className="!typo-p">{formatMoney(dat.amount)}</p>
