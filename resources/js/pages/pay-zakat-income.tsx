@@ -1,5 +1,5 @@
-import PaymentMethodSelector from '@/components/select-payment-method';
 import { useEffect, useState } from 'react';
+import ZakatView from './zakat-view';
 
 interface Props {
     village: { id: number; name: string } | null;
@@ -7,25 +7,15 @@ interface Props {
 }
 
 export default function PayZakatPenghasilan({ village, csrf }: Props) {
-    const [form, setForm] = useState({
-        income_month: '',
-        income_plus: '',
-        email: '',
-        name: '',
-        no_hp: '',
-        gender: 'bapak',
-    });
-
-    const [result, setResult] = useState<any | null>(null);
+    const [incomeMonth, setIncomeMonth] = useState('');
+    const [incomePlus, setIncomePlus] = useState('');
+    const [result, setResult] = useState<{ is_nisab: boolean; amount: number } | null>(null);
+    const [nisabInfo, setNisabInfo] = useState<{ gold_price: number; nisab_value: number } | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [step, setStep] = useState<1 | 2>(1);
-    const [payment, setPayment] = useState({
-        method: 'manual_transfer',
-        channel: '',
-    });
-    const [nisabInfo, setNisabInfo] = useState<{ gold_price: number; nisab_value: number } | null>(null);
+    const [sid, setSid] = useState<string | null>(null);
 
+    // Ambil nisab saat load
     useEffect(() => {
         fetch('/income-zakat/nisab')
             .then((r) => r.json())
@@ -33,7 +23,8 @@ export default function PayZakatPenghasilan({ village, csrf }: Props) {
             .catch(() => setNisabInfo(null));
     }, []);
 
-    const handleCalculate = async (e: React.FormEvent) => {
+    // Kalkulasi zakat
+    async function calcZakat(e: React.FormEvent) {
         e.preventDefault();
         setError(null);
         try {
@@ -44,192 +35,96 @@ export default function PayZakatPenghasilan({ village, csrf }: Props) {
                     'X-CSRF-TOKEN': csrf,
                 },
                 body: JSON.stringify({
-                    income_month: parseFloat(form.income_month || '0'),
-                    income_plus: parseFloat(form.income_plus || '0'),
+                    income_month: parseFloat(incomeMonth || '0'),
+                    income_plus: parseFloat(incomePlus || '0'),
                 }),
             });
-            const data = await res.json();
-            setResult(data);
-        } catch (err) {
-            setError('Gagal menghitung zakat. Silakan coba lagi.');
+            const json = await res.json();
+            setResult(json);
+        } catch {
+            setError('Gagal menghitung zakat.');
         }
-    };
+    }
 
-    const createPayment = async () => {
-        const res = await fetch('/payments', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                Accept: 'application/json',
-                'X-CSRF-TOKEN': csrf,
-            },
-            body: JSON.stringify({
-                amount: result.amount,
-                method: payment.method,
-                channel: payment.channel,
-                description: `Zakat Penghasilan ${new Date().toLocaleDateString('id-ID', {
-                    month: 'long',
-                    year: 'numeric',
-                })}`,
-            }),
-        });
-
-        const data = await res.json();
-        if (!data.success) throw new Error(data.message || 'Gagal membuat pembayaran.');
-        return { paymentId: data.payment_id, referenceId: data.reference_id };
-    };
-
-    const handlePay = async () => {
+    // Prepare & redirect ke halaman identitas
+    async function handlePrepare() {
         if (!village || !result?.is_nisab) return;
-
-        if (!form.name || !form.email || !form.no_hp || !payment.channel) {
-            alert('Lengkapi data diri dan pilih metode pembayaran.');
-            return;
-        }
-
+        setLoading(true);
+        setError(null);
         try {
-            setLoading(true);
-            setError(null);
-
-            const { paymentId, referenceId } = await createPayment();
-
-            const res = await fetch('/income-zakat', {
+            const res = await fetch('/income-zakat/prepare', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Accept: 'application/json',
-                    'X-CSRF-TOKEN': csrf,
-                },
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrf },
                 body: JSON.stringify({
-                    ...form,
-                    village_id: village.id,
-                    income_month: parseFloat(form.income_month),
-                    income_plus: parseFloat(form.income_plus),
-                    amount: result.amount,
-                    payment_id: paymentId,
+                    income_month: parseFloat(incomeMonth),
+                    income_plus: parseFloat(incomePlus),
+                    village_id: village?.id,
                 }),
             });
-
-            const data = await res.json();
-            if (data.success) {
-                window.location.href = `/instruksi/${referenceId}`;
+            const json = await res.json();
+            if (json.success) {
+                setSid(json.sid);
             } else {
-                setError(data.message || 'Gagal mencatat zakat.');
+                setError(json.message || 'Gagal membuat transaksi.');
             }
-        } catch (err: any) {
-            setError(err.message || 'Terjadi kesalahan saat pembayaran.');
+        } catch (e: any) {
+            setError(e.message || 'Terjadi kesalahan.');
         } finally {
             setLoading(false);
         }
-    };
-
-    const goToStep2 = () => {
-        if (!form.name || !form.email || !form.no_hp) {
-            alert('Lengkapi data diri terlebih dahulu.');
-            return;
-        }
-        setStep(2);
-    };
+    }
 
     return (
-        <form onSubmit={handleCalculate} className="space-y-3">
-            {/* Input penghasilan */}
-            <input
-                className="input"
-                placeholder="Penghasilan bulanan (Rp)"
-                type="number"
-                value={form.income_month}
-                onChange={(e) => setForm({ ...form, income_month: e.target.value })}
-            />
-            <input
-                className="input"
-                placeholder="Bonus / THR (Rp)"
-                type="number"
-                value={form.income_plus}
-                onChange={(e) => setForm({ ...form, income_plus: e.target.value })}
-            />
-            {nisabInfo && (
-                <div className="text-sm text-gray-600">
-                    Nisab bulanan saat ini:
-                    <strong className="ml-1">Rp {nisabInfo.nisab_value.toLocaleString('id-ID')}</strong>
-                    &nbsp; (harga emas {nisabInfo.gold_price.toLocaleString('id-ID')} / gr)
-                </div>
-            )}
-
-            <button className="btn btn-primary" type="submit" disabled={!village || loading}>
-                Hitung Zakat
-            </button>
+        <div className="space-y-6">
+            <form onSubmit={calcZakat} className="space-y-3">
+                <input
+                    className="input"
+                    type="number"
+                    placeholder="Penghasilan Bulanan (Rp)"
+                    value={incomeMonth}
+                    onChange={(e) => setIncomeMonth(e.target.value)}
+                />
+                <input
+                    className="input"
+                    type="number"
+                    placeholder="Bonus / THR (Rp)"
+                    value={incomePlus}
+                    onChange={(e) => setIncomePlus(e.target.value)}
+                />
+                {nisabInfo && (
+                    <small className="block text-muted-foreground">
+                        Nisab ≈ Rp {nisabInfo.nisab_value.toLocaleString('id-ID')}
+                        &nbsp;(emas {nisabInfo.gold_price.toLocaleString('id-ID')} / gr)
+                    </small>
+                )}
+                <button className="btn btn-primary w-full" disabled={!village}>
+                    Hitung Zakat
+                </button>
+                {result && !result.is_nisab && (
+                    <div className="space-y-3 text-center text-sm text-muted-foreground">
+                        <p>
+                            {result.amount === 0
+                                ? 'Penghasilan belum mencapai nisab.'
+                                : 'Penghasilan belum mencapai nisab; Anda belum wajib membayar zakat.'}
+                        </p>
+                    </div>
+                )}
+            </form>
 
             {error && <p className="text-sm text-red-600">{error}</p>}
 
-            {result && (
-                <div className="mt-4 text-center">
-                    <p className={result.is_nisab ? 'text-green-600' : 'text-red-600'}>{result.message}</p>
-
-                    {result.is_nisab && (
-                        <>
-                            <p className="text-lg">Zakat yang harus dibayar:</p>
-                            <p className="text-2xl font-bold">Rp {result.amount.toLocaleString('id-ID')}</p>
-
-                            {/* === STEP 1: Data Diri === */}
-                            {step === 1 && (
-                                <div className="mt-4 space-y-3 text-left">
-                                    <input
-                                        className="input"
-                                        placeholder="Nama lengkap"
-                                        value={form.name}
-                                        onChange={(e) => setForm({ ...form, name: e.target.value })}
-                                    />
-                                    <input
-                                        className="input"
-                                        placeholder="Email"
-                                        type="email"
-                                        value={form.email}
-                                        onChange={(e) => setForm({ ...form, email: e.target.value })}
-                                    />
-                                    <input
-                                        className="input"
-                                        placeholder="No. HP"
-                                        value={form.no_hp}
-                                        onChange={(e) => setForm({ ...form, no_hp: e.target.value })}
-                                    />
-                                    <select className="input" value={form.gender} onChange={(e) => setForm({ ...form, gender: e.target.value })}>
-                                        <option value="bapak">Bapak</option>
-                                        <option value="ibu">Ibu</option>
-                                    </select>
-
-                                    <button type="button" className="btn btn-secondary w-full" onClick={goToStep2}>
-                                        Pilih Metode Pembayaran
-                                    </button>
-                                </div>
-                            )}
-
-                            {/* === STEP 2: Metode Pembayaran + Tombol Bayar === */}
-                            {step === 2 && (
-                                <div className="mt-4 space-y-3 text-left">
-                                    <PaymentMethodSelector method={payment.method} channel={payment.channel} onChange={setPayment} />
-                                    <button
-                                        type="button"
-                                        className="btn btn-success w-full"
-                                        onClick={handlePay}
-                                        disabled={loading || !payment.channel}
-                                    >
-                                        {loading ? 'Memproses...' : 'Bayar Zakat'}
-                                    </button>
-
-                                    <button type="button" className="btn btn-link w-full text-sm" onClick={() => setStep(1)}>
-                                        ‹ Kembali ke Data Diri
-                                    </button>
-                                </div>
-                            )}
-                        </>
-                    )}
-
-                    {/* {!result.is_nisab && (
-                        <p className="text-sm text-gray-600">Nilai belum mencapai nisab Rp {result.nisab_value.toLocaleString('id-ID')}</p>
-                    )} */}
+            {result && result.is_nisab && (
+                <div className="space-y-3 text-center">
+                    <p className="text-lg">Penghasilan Anda mencapai nisab.</p>
+                    <p className="text-lg">Anda wajib bayar zakat.</p>
+                    <p className="text-lg font-semibold">Zakat yang harus dibayar</p>
+                    <p className="text-2xl font-bold">Rp {result.amount.toLocaleString('id-ID')}</p>
+                    <button className="btn btn-success w-full" onClick={handlePrepare} disabled={loading}>
+                        {loading ? 'Memproses…' : 'Bayar Zakat'}
+                    </button>
                 </div>
             )}
-        </form>
+            {sid && <ZakatView type="income" sid={sid} />}
+        </div>
     );
 }

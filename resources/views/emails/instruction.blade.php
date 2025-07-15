@@ -1,26 +1,31 @@
 @component('mail::message')
-# Assalamu'alaikum
+# Konfirmasi Pembayaran
 
-Terima kasih telah menunaikan niat {{ $zakatType }}.
+@component('mail::panel')
+**Penerima**  
+{{ $payment->first_name }} {{ $payment->last_name }}
 
-Jumlah yang harus dibayarkan:  
-**Rp {{ number_format($payment->amount, 0, ',', '.') }}**
+**Metode Pembayaran**  
+{{ $payment->payment_type ?? '-' }}
 
-Silakan transfer ke:
+**Status**  
+{{ strtoupper($payment->status) }}
 
-**BCA 123456789**  
-a.n. Panitia Zakat  
-Metode: {{ strtoupper($payment->channel) }}
+**Tenggat**  
+{{ $payment->expired_at }}
+@endcomponent
 
-@component('mail::button', ['url' => url('/instruksi/' . $payment->reference_id)])
+@foreach ($payment->items ?? [] as $item)
+**{{ $item['name'] }}**  
+Rp {{ number_format($item['price'], 0, ',', '.') }}
+
+@endforeach
+
+**Total**  
+# Rp {{ number_format($payment->amount, 0, ',', '.') }}
+
+@component('mail::button', ['url' => route('payment.view', $payment->id)])
 Lihat Instruksi Pembayaran
 @endcomponent
 
-<p>
-    Email ini dikirim atas nama:
-    <strong>{{ $village['name'] ?? '-' }}</strong>
-    ({{ $village['email'] ?? '-' }})
-</p>
-
-Jazakumullah khayran.
 @endcomponent

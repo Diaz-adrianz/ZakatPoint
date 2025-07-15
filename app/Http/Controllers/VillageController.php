@@ -277,4 +277,28 @@ class VillageController extends Controller
             return Redirect::back()->with('error', 'Terjadi kesalahan saat mengubah peran pengguna. Silakan coba lagi.');
         }
     }
+    public function search(Request $request)
+{
+    $q = trim($request->get('q', ''));
+
+    // Kalau query kosong – kembalikan array kosong
+    if ($q === '') {
+        return response()->json([]);
+    }
+
+    /*  ───── contoh struktur tabel ─────
+        id | province | city | district | village | …
+       ----------------------------------------------
+    */
+
+    $villages = Village::query()
+        ->where('village',  'like', "%{$q}%")          // nama desa
+        ->orWhere('district','like', "%{$q}%")         // atau kecamatan
+        ->selectRaw('id, village as name')             // **alias jadi "name"**
+        ->limit(10)
+        ->get();
+
+    return response()->json($villages);
+}
+
 }

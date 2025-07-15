@@ -5,9 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\Donation;
 use App\Models\Donatur;
 use App\Http\Controllers\PaymentController;
+use App\Mail\InstructionMail;
+use App\Models\Payment;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Redirect;
 
@@ -240,6 +243,10 @@ class DonationController extends Controller
                 'donation_id' => $donation->id,
                 'payment_id' => $payment['id'],
             ]);
+
+            $payment = Payment::findOrFail($payment->id);
+            // Kirim email
+            Mail::to($data['email'])->send(new InstructionMail($payment));
 
             return to_route('payment.view', ['id' => $payment['id']]);
         } catch (\Exception $e) {
