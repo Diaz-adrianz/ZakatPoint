@@ -5,6 +5,7 @@ use App\Http\Controllers\FitrahZakatController;
 use App\Http\Controllers\GoldZakatController;
 use App\Http\Controllers\IncomeZakatController;
 use App\Http\Controllers\InstructionController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\RegionController;
 use App\Http\Controllers\SilverZakatController;
 use App\Http\Controllers\VillageController;
@@ -14,7 +15,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\DonationController;
-use App\Http\Controllers\PaymentController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -108,11 +108,51 @@ Route::get('fitrah-session/by-village/{id}', function ($id) {
         'available' => $session !== null,
     ]);
 });
-Route::post('fitrah-zakat', [FitrahZakatController::class, 'store']);
+/* ---------- Zakat Fitrah (alur baru) ---------- */
+Route::post('/fitrah-zakat/prepare', [FitrahZakatController::class,'prepare'])
+        ->name('fitrah.prepare');              // dipanggil dari React setelah kalkulasi
+
+Route::post('/fitrah-zakat/pay', [FitrahZakatController::class,'pay'])
+        ->name('fitrah.pay');                  // simpan zakat, buat payment, redirect ke payment.view
+
 Route::post('/payments', [PaymentController::class, 'store']);
 Route::get('/instruksi/{reference}', function ($reference) {
     $payment = Payment::where('reference_id', $reference)->firstOrFail();
     return app(InstructionController::class)->show($payment);
+});
+
+// income
+Route::post('/income-zakat/prepare', [IncomeZakatController::class, 'prepare'])->name('income.prepare');
+Route::post('/income-zakat/pay', [IncomeZakatController::class, 'pay'])->name('income.pay');
+// gold
+Route::post('/gold-zakat/prepare', [GoldZakatController::class, 'prepare']);
+Route::post('/gold-zakat/pay', [GoldZakatController::class, 'pay'])->name('gold.pay');
+// silver
+Route::post('/silver-zakat/prepare', [SilverZakatController::class, 'prepare']);
+Route::post('/silver-zakat/pay', [SilverZakatController::class, 'pay'])->name('silver.pay');
+
+Route::get('/zakat/{type}/{sid}', function ($type, $sid) {
+    $data = session("zakat.$type.$sid");
+
+    if (!$data) {
+        abort(404);
+    }
+
+    return Inertia::render('zakat-view', [
+        'type' => $type,
+        'sid'  => $sid,
+        'data' => $data,
+    ]);
+})->name('zakat.view');
+
+Route::get('/api/zakat/{type}/draft/{sid}', function ($type, $sid) {
+    return match ($type) {
+        'fitrah' => app(\App\Http\Controllers\FitrahZakatController::class)->apiDraft($sid),
+        'gold' => app(\App\Http\Controllers\GoldZakatController::class)->apiDraft($sid),
+        'income' => app(\App\Http\Controllers\IncomeZakatController::class)->apiDraft($sid),
+        'silver' => app(\App\Http\Controllers\SilverZakatController::class)->apiDraft($sid),
+        default => abort(404),
+    };
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {

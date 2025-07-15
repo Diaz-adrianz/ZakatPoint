@@ -8,12 +8,12 @@ use App\Models\IncomeZakat;
 use App\Models\Payment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
+use Inertia\Inertia;
 
 class IncomeZakatController extends Controller
 {
-    /**
-     * Hitung zakat saja (dipakai kalkulator di FE, tidak menyimpan).
-     */
+    /* ========= 1. Kalkulator ========= */
     public function calculate(Request $request)
     {
         $validated = $request->validate([
@@ -21,81 +21,125 @@ class IncomeZakatController extends Controller
             'income_plus'  => 'required|numeric|min:0',
         ]);
 
-        // Selalu ambil harga emas hari ini via helper (akan simpan / fallback jika perlu)
-        $goldPrice = MetalPriceHelper::getGoldToday();           // Rp/gram
-        $nisabBulanan = (85 * $goldPrice) / 12;                // 85 gr dibagi 12
-
-        $totalIncome = $validated['income_month'] + $validated['income_plus'];
-        $isNisab     = $totalIncome >= $nisabBulanan;
-        $amount      = $isNisab ? $totalIncome * 0.025 : 0;
-
-        return response()->json([
-            'gold_price'  => round($goldPrice, 0),
-            'is_nisab'    => $isNisab,
-            'amount'      => round($amount, 0),
-            'message'     => $isNisab
-                ? 'Anda wajib membayar zakat.'
-                : 'Belum wajib membayar zakat karena belum mencapai nisab.',
-        ]);
-    }
-
-    /**
-     * Simpan zakat (dipanggil setelah user menekan "Bayar").
-     * Hanya menyimpan bila memang wajib.
-     */
-    public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'income_month' => 'required|numeric|min:0',
-            'income_plus'  => 'required|numeric|min:0',
-            'email'        => 'required|email',
-            'name'         => 'required|string|max:255',
-            'no_hp'        => 'required|string|max:30',
-            'gender'       => 'required|in:bapak,ibu',
-            'village_id'   => 'required|exists:villages,id',
-            'payment_id'   => 'required|exists:payments,id',
-        ]);
-
-        // --- hitung lagi untuk keamanan ---
-        $goldPrice    = MetalPriceHelper::getGoldToday();
-        $nisabBulanan = (85 * $goldPrice) / 12;
-
+        $goldPrice    = MetalPriceHelper::getGoldToday();       
+        $nisabBulanan = (85 * $goldPrice) / 12;                 
         $totalIncome  = $validated['income_month'] + $validated['income_plus'];
         $isNisab      = $totalIncome >= $nisabBulanan;
         $amount       = $isNisab ? $totalIncome * 0.025 : 0;
 
-        if (!$isNisab) {
+        return response()->json([
+            'gold_price' => round($goldPrice),
+            'is_nisab'   => $isNisab,
+            'amount'     => round($amount),
+            'message'    => $isNisab
+                ? 'Anda wajib membayar zakat.'
+                : 'Belum wajib zakat karena belum mencapai nisab.',
+        ]);
+    }
+
+    /* ========= 2. Simpan ke session ========= */
+    public function prepare(Request $request)
+    {
+        $validated = $request->validate([
+            'income_month' => 'required|numeric|min:0',
+            'income_plus'  => 'required|numeric|min:0',
+            'village_id'   => 'required|exists:villages,id',
+        ]);
+
+        $goldPrice    = MetalPriceHelper::getGoldToday();
+        $nisabBulanan = (85 * $goldPrice) / 12;
+        $totalIncome  = $validated['income_month'] + $validated['income_plus'];
+
+        if ($totalIncome < $nisabBulanan) {
             return response()->json([
                 'success' => false,
-                'message' => 'Penghasilan belum mencapai nisab, tidak wajib zakat.',
+                'message' => 'Penghasilan belum mencapai nisab.',
             ], 422);
         }
 
-        // --- simpan ---
-        $zakat = IncomeZakat::create([
-            'income_month' => $validated['income_month'],
-            'income_plus'  => $validated['income_plus'],
-            'amount'       => round($amount, 0),
-            'email'        => $validated['email'],
+        $amount = round($totalIncome * 0.025);
+        $id   = (string) Str::uuid(); // SID
+        $type = 'income'; // karena ini controller zakat penghasilan
+
+        session()->put("zakat.$type.$id", array_merge($validated, [
+            'amount' => $amount,
+        ]));
+
+        return response()->json([
+            'success' => true,
+            'sid' => $id,
+        ]);
+    }
+
+    /* ========= 4. Proses & bayar ========= */
+    public function pay(Request $request)
+    {
+        $validated = $request->validate([
+            'sid'        => 'required|string',
+            'name'       => 'required|string|max:255',
+            'email'      => 'required|email',
+            'no_hp'      => 'required|string|max:30',
+            'gender'     => 'required|in:Bapak,Ibu',
+            'village_id' => 'required|exists:villages,id',
+        ]);
+
+        $draft = session("zakat.income.{$validated['sid']}");
+        abort_if(!$draft, 404);
+
+        /* ===== 1. Buat Payment ===== */
+        $paymentCtrl = new PaymentController();
+        $payment = $paymentCtrl->store(
+            [
+                'amount'     => $draft['amount'],
+                'first_name' => $validated['name'],
+                'email'      => $validated['email'],
+                'phone'      => $validated['no_hp'],
+            ],
+            [
+                [
+                    'item_id'  => 'income_zakat',
+                    'name'     => 'Zakat Penghasilan',
+                    'price'    => $draft['amount'],
+                    'quantity' => 1,
+                    'category' => 'zakat',
+                ],
+            ],
+            2
+        );
+        
+        if (!$payment) {
+            return back()->withErrors(['error' => 'Gagal membuat transaksi.']);
+        }
+
+        /* ===== 2. Simpan zakat ===== */
+        IncomeZakat::create([
+            'income_month' => $draft['income_month'],
+            'income_plus'  => $draft['income_plus'],
+            'amount'       => $draft['amount'],
+            'payment_id'   => $payment->id,
             'name'         => $validated['name'],
+            'email'        => $validated['email'],
             'no_hp'        => $validated['no_hp'],
             'gender'       => $validated['gender'],
             'village_id'   => $validated['village_id'],
-            'payment_id'   => $request->payment_id,
+            'payment_id'   => $payment->id,
         ]);
 
-        $payment = Payment::findOrFail($request['payment_id']);
+        /* ===== 3. Kirim email ===== */
+        $payment = Payment::with('incomeZakat.village')->findOrFail($payment->id);
+        Mail::to($validated['email'])->send(new InstructionMail($payment));
 
-        if ($request->filled('email')) {
-            Mail::to($request['email'])->send(new InstructionMail($payment));
-        }
+        /* ===== 4. Hapus draft & redirect ===== */
+        session()->forget("zakat.income.{$validated['sid']}");
 
-        return response()->json([
-            'success'      => true,
-            'zakat_id'     => $zakat->id,
-            'amount'       => round($amount, 0),
-            'nisab_value'  => round($nisabBulanan, 0),
-            'gold_price'   => round($goldPrice, 0),
-        ]);
+        return redirect()->route('payment.view', ['id' => $payment->id]);
+    }
+    /* ---------- STEP 4B: REST draft utk React ---------- */
+    public function apiDraft(string $sid)
+    {
+        $draft = session("zakat.income.$sid");
+        return $draft
+            ? response()->json($draft)
+            : response()->json(['message'=>'Draft not found'], 404);
     }
 }

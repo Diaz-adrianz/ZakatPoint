@@ -17,14 +17,19 @@ class InstructionMail extends Mailable
 
     public function __construct(Payment $payment)
     {
-        $this->payment   = $payment;
-        $this->zakatType = $this->determineType($payment->description);
-        $this->village   = $this->detectVillage($payment);   // ← set
+        $this->payment = $payment;
+        $this->zakatType = $this->determineType($payment->description ?? '');
+        $this->village = $this->detectVillage($payment);
+
+        // Pastikan items adalah array, bukan Collection atau json
+        if (is_string($payment->items)) {
+            $this->payment->items = json_decode($payment->items, true);
+        }
     }
 
     public function build()
     {
-        return $this->subject("Instruksi Pembayaran {$this->zakatType}")
+        return $this->subject("Konfirmasi Pembayaran {$this->zakatType}")
                     ->markdown('emails.instruction', [
                         'payment'   => $this->payment,
                         'zakatType' => $this->zakatType,
