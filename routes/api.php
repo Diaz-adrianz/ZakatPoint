@@ -21,7 +21,7 @@ Route::prefix('api')->group(function () {
     Route::post('/chatbot-article', [ArticleController::class, 'chat'])
          ->name("article.chat");
 
-    Route::post('/', [PaymentController::class, 'handleMidtransWebhook'])
+    Route::post('/midtrans-webhook', [PaymentController::class, 'handleMidtransWebhook'])
          ->withoutMiddleware([VerifyCsrfToken::class]);
 
     Route::middleware(['auth', 'verified'])->group(function () {
