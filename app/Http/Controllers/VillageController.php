@@ -7,6 +7,10 @@ use App\Models\UserVillage;
 use Inertia\Inertia;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\RegionController;
+use App\Models\Donatur;
+use App\Models\FitrahZakat;
+use App\Models\GoldZakat;
+use App\Models\SilverZakat;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Validation\Rule;
@@ -17,6 +21,55 @@ use Illuminate\Support\Facades\Redirect;
 
 class VillageController extends Controller
 {
+    public function dashboard(Request $request)
+    {
+        $villageId = $request->cookie('village_id');
+
+        if (!$villageId) {
+            return Inertia::render('dashboard');
+        }
+
+        $zakatGold = GoldZakat::where('village_id', $villageId)
+                            ->whereHas('payment', function ($query) {
+                                $query->where('status', 'SUCCESS');
+                            })
+                            ->sum('amount');
+        $zakatSilver = SilverZakat::where('village_id', $villageId)
+                            ->whereHas('payment', function ($query) {
+                                $query->where('status', 'SUCCESS');
+                            })
+                            ->sum('amount');
+        $zakatFitrah = FitrahZakat::whereHas('session', function ($query) use ($villageId) {
+                                $query->where('village_id', $villageId);
+                            })
+                            ->whereHas('payment', function ($query) {
+                                $query->where('status', 'SUCCESS');
+                            })            
+                            ->sum('amount');
+        $donaturs = Donatur::whereHas('donation', function ($query) use ($villageId) {
+                                $query->where('village_id', $villageId);
+                            })
+                            ->whereHas('payment', function ($query) {
+                                $query->where('status', 'SUCCESS');
+                            })            
+                            ->sum('nominal');
+
+        return Inertia::render('dashboard', [
+            "stats" => [
+                // "total" => $zakatGold + $zakatSilver + $zakatFitrah + $donaturs,
+                // "zakatGold" => $zakatGold,
+                // "zakatSilver" => $zakatSilver,
+                // "zakatFitrah" => $zakatFitrah,
+                // "donaturs" => $donaturs,
+                "total" => 120000,
+                "zakatGold" => 30000,
+                "zakatSilver" => 30000,
+                "zakatFitrah" => 30000,
+                "donaturs" => 30000,
+            ]
+        ]);
+    }
+
     public function index()
 {
     $villages = Village::orderBy('province')->get();

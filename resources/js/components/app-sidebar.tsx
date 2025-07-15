@@ -3,7 +3,7 @@ import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { SharedData, type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
-import { BookOpenIcon, BriefcaseBusinessIcon, CoinsIcon, HandCoinsIcon, HeartHandshakeIcon, LayoutGrid, StoreIcon, UsersIcon } from 'lucide-react';
+import { BookOpenIcon, BriefcaseBusinessIcon, CoinsIcon, GemIcon, HandCoinsIcon, HeartHandshakeIcon, LayoutGrid, StoreIcon, UsersIcon } from 'lucide-react';
 import AppLogo from './app-logo';
 import SelectVillage from './select-village';
 
@@ -17,8 +17,13 @@ const mainNavItems: NavItem[] = [
 
 const financeNavItems: NavItem[] = [
     {
-        title: 'Zakat mal',
-        href: '/zakat-mal',
+        title: 'Zakat emas',
+        href: '/zakat-emas',
+        icon: GemIcon,
+    },
+    {
+        title: 'Zakat perak',
+        href: '/zakat-perak',
         icon: CoinsIcon,
     },
     {
