@@ -7,6 +7,7 @@ use Inertia\Inertia;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Http;
 
 class ArticleController extends Controller
 {
@@ -174,18 +175,27 @@ class ArticleController extends Controller
 
     public function chat(Request $request) 
     {
-        $validatedData = $request->validate([
+        $validated = $request->validate([
             'message' => 'required|string',
         ]);
 
         try {
+            $apiHost = env('FLOWISE_API_HOST');
+            $chatflowId = env('FLOWISE_CHATFLOW_ID');
+
+            $response = Http::post("$apiHost/api/v1/prediction/$chatflowId", [
+                'question' => $validated['message'],
+            ]);
+
+            $result = $response->json();
+
             return response()->json([
-                'message' => 'PONG'
-            ] , 200);
-        } catch (\Exception $th) {
+                'message' => $result['text'] ?? 'Maaf, tidak ada respons dari AI.'
+            ]);
+        } catch (\Exception $e) {
             return response()->json([
-                'message' => 'Maaf, ada kesalahan teknis saat saya mencoba membuat respons.'
-            ] , 200);
+                'message' => 'Maaf, ada kesalahan teknis saat mencoba merespons.'
+            ]);
         }
     }
 }
